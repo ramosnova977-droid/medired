@@ -1,0 +1,602 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MEDIRED | Gestión de medicamentos</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            background: #f3f7f8;
+            color: #243746;
+        }
+
+        header {
+            background: #087f8c;
+            color: white;
+            padding: 22px 35px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        header h1 {
+            font-size: 28px;
+            letter-spacing: 2px;
+        }
+
+        header p {
+            margin-top: 6px;
+            font-size: 14px;
+        }
+
+        .estado {
+            background: #ffffff;
+            color: #087f8c;
+            padding: 10px 15px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: bold;
+        }
+
+        .contenedor {
+            display: flex;
+            min-height: calc(100vh - 90px);
+        }
+
+        aside {
+            width: 225px;
+            background: #ffffff;
+            padding: 25px 15px;
+            border-right: 1px solid #e0e8eb;
+        }
+
+        aside h3 {
+            color: #78909c;
+            font-size: 12px;
+            margin: 0 12px 15px;
+        }
+
+        .menu {
+            width: 100%;
+            text-align: left;
+            border: none;
+            background: transparent;
+            padding: 14px 12px;
+            margin-bottom: 6px;
+            border-radius: 8px;
+            color: #405563;
+            cursor: pointer;
+            font-size: 15px;
+        }
+
+        .menu:hover, .menu.activo {
+            background: #e5f5f5;
+            color: #087f8c;
+            font-weight: bold;
+        }
+
+        main {
+            flex: 1;
+            padding: 30px;
+            min-width: 0;
+        }
+
+        .bienvenida {
+            margin-bottom: 25px;
+        }
+
+        .bienvenida h2 {
+            font-size: 26px;
+            margin-bottom: 8px;
+        }
+
+        .bienvenida p {
+            color: #71818a;
+        }
+
+        .tarjetas {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 18px;
+            margin-bottom: 28px;
+        }
+
+        .tarjeta {
+            background: white;
+            padding: 23px;
+            border-radius: 12px;
+            border: 1px solid #e4ebee;
+            box-shadow: 0 3px 10px #173b4b08;
+        }
+
+        .tarjeta p {
+            color: #71818a;
+            font-size: 14px;
+            margin-bottom: 12px;
+        }
+
+        .tarjeta h3 {
+            font-size: 30px;
+            color: #087f8c;
+        }
+
+        .panel {
+            background: white;
+            padding: 24px;
+            border-radius: 12px;
+            border: 1px solid #e4ebee;
+            margin-bottom: 20px;
+        }
+
+        .panel-cabecera {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .panel h3 {
+            font-size: 18px;
+        }
+
+        button.accion {
+            background: #087f8c;
+            color: white;
+            border: none;
+            border-radius: 7px;
+            padding: 11px 16px;
+            cursor: pointer;
+        }
+
+        button.accion:hover {
+            background: #066772;
+        }
+
+        input {
+            padding: 11px;
+            border: 1px solid #d6e1e5;
+            border-radius: 7px;
+            width: 100%;
+            max-width: 330px;
+        }
+
+        .buscador {
+            margin-bottom: 18px;
+        }
+
+        .tabla-contenedor {
+            overflow-x: auto;
+        }
+
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            font-size: 14px;
+        }
+
+        th, td {
+            padding: 14px 12px;
+            border-bottom: 1px solid #edf1f3;
+            text-align: left;
+        }
+
+        th {
+            background: #f6f9fa;
+            color: #647782;
+        }
+
+        .mensaje {
+            padding: 18px;
+            color: #647782;
+            background: #f6f9fa;
+            border-radius: 8px;
+            margin-top: 10px;
+        }
+
+        .oculto {
+            display: none;
+        }
+
+        footer {
+            color: #82929a;
+            text-align: center;
+            padding: 20px;
+            font-size: 12px;
+        }
+
+        @media (max-width: 800px) {
+            .contenedor {
+                flex-direction: column;
+            }
+
+            aside {
+                width: 100%;
+                border-right: none;
+                border-bottom: 1px solid #e0e8eb;
+            }
+
+            .tarjetas {
+                grid-template-columns: 1fr;
+            }
+
+            main {
+                padding: 18px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div>
+            <h1>MEDIRED</h1>
+            <p>Plataforma de gestión y trazabilidad de medicamentos</p>
+        </div>
+        <div class="estado">● Sistema de gestión</div>
+    </header>
+
+    <div class="contenedor">
+        <aside>
+            <h3>MENÚ PRINCIPAL</h3>
+
+            <button class="menu activo" onclick="mostrarSeccion('inicio', this)">
+                ◈ Inicio
+            </button>
+
+            <button class="menu" onclick="cargarMedicamentos(this)">
+                ♧ Medicamentos
+            </button>
+
+            <button class="menu" onclick="cargarSedes(this)">
+                ⌖ Sedes
+            </button>
+
+            <button class="menu" onclick="mostrarInventario(this)">
+                ▤ Inventario
+            </button>
+        </aside>
+
+        <main>
+            <section id="inicio">
+                <div class="bienvenida">
+                    <h2>Panel principal</h2>
+                    <p>Bienvenido a MEDIRED. Consulta la información del sistema.</p>
+                </div>
+
+                <div class="tarjetas">
+                    <div class="tarjeta">
+                        <p>Medicamentos registrados</p>
+                        <h3 id="totalMedicamentos">—</h3>
+                    </div>
+
+                    <div class="tarjeta">
+                        <p>Sedes registradas</p>
+                        <h3 id="totalSedes">—</h3>
+                    </div>
+
+                    <div class="tarjeta">
+                        <p>Conexión con la API</p>
+                        <h3 id="estadoAPI" style="font-size: 20px;">Verificando...</h3>
+                    </div>
+                </div>
+
+                <div class="panel">
+                    <div class="panel-cabecera">
+                        <h3>Estado del sistema</h3>
+                        <button class="accion" onclick="verificarSistema()">
+                            Verificar conexión
+                        </button>
+                    </div>
+                    <div id="mensajeInicio" class="mensaje">
+                        Conectando con el servidor de MEDIRED...
+                    </div>
+                </div>
+            </section>
+
+            <section id="medicamentos" class="oculto">
+                <div class="bienvenida">
+                    <h2>Medicamentos</h2>
+                    <p>Consulta los medicamentos registrados en la base de datos.</p>
+                </div>
+
+                <div class="panel">
+                    <div class="panel-cabecera">
+                        <h3>Listado de medicamentos</h3>
+                        <button class="accion" onclick="cargarMedicamentos()">
+                            Actualizar
+                        </button>
+                    </div>
+                    <input class="buscador" id="buscarMedicamento"
+                           placeholder="Buscar medicamento..."
+                           oninput="filtrarTabla('tablaMedicamentos', this.value)">
+
+                    <div id="resultadoMedicamentos" class="tabla-contenedor">
+                        <p class="mensaje">Cargando información...</p>
+                    </div>
+                </div>
+            </section>
+
+            <section id="sedes" class="oculto">
+                <div class="bienvenida">
+                    <h2>Sedes</h2>
+                    <p>Consulta las sedes registradas en MEDIRED.</p>
+                </div>
+
+                <div class="panel">
+                    <div class="panel-cabecera">
+                        <h3>Listado de sedes</h3>
+                        <button class="accion" onclick="cargarSedes()">
+                            Actualizar
+                        </button>
+                    </div>
+
+                    <input class="buscador" id="buscarSede"
+                           placeholder="Buscar sede..."
+                           oninput="filtrarTabla('tablaSedes', this.value)">
+
+                    <div id="resultadoSedes" class="tabla-contenedor">
+                        <p class="mensaje">Cargando información...</p>
+                    </div>
+                </div>
+            </section>
+
+            <section id="inventario" class="oculto">
+                <div class="bienvenida">
+                    <h2>Inventario</h2>
+                    <p>Consulta las existencias por identificador de medicamento.</p>
+                </div>
+
+                <div class="panel">
+                    <div class="panel-cabecera">
+                        <h3>Consultar existencias</h3>
+                    </div>
+
+                    <p style="margin-bottom: 12px;">
+                        Ingresa el ID de un medicamento registrado.
+                    </p>
+
+                    <input id="idMedicamento" type="number" min="1"
+                           placeholder="Ejemplo: 1">
+
+                    <button class="accion" onclick="consultarInventario()">
+                        Consultar
+                    </button>
+
+                    <div id="resultadoInventario" class="mensaje">
+                        Ingresa un identificador para consultar el inventario.
+                    </div>
+                </div>
+            </section>
+
+            <footer>MEDIRED · Sistema de gestión y trazabilidad de medicamentos</footer>
+        </main>
+    </div>
+
+    <script>
+        function mostrarSeccion(nombre, boton) {
+            const secciones = ["inicio", "medicamentos", "sedes", "inventario"];
+
+            for (let i = 0; i < secciones.length; i++) {
+                document.getElementById(secciones[i]).classList.add("oculto");
+            }
+
+            document.getElementById(nombre).classList.remove("oculto");
+
+            const botones = document.querySelectorAll(".menu");
+            for (let i = 0; i < botones.length; i++) {
+                botones[i].classList.remove("activo");
+            }
+
+            if (boton) {
+                boton.classList.add("activo");
+            }
+        }
+
+        async function pedirDatos(url) {
+            const respuesta = await fetch(url);
+
+            if (!respuesta.ok) {
+                throw new Error("El servidor respondió con código " + respuesta.status);
+            }
+
+            return await respuesta.json();
+        }
+
+        function obtenerLista(datos) {
+            if (Array.isArray(datos)) return datos;
+            if (datos && Array.isArray(datos.items)) return datos.items;
+            if (datos && Array.isArray(datos.resultados)) return datos.resultados;
+            return [];
+        }
+
+        async function verificarSistema() {
+            const estado = document.getElementById("estadoAPI");
+            const mensaje = document.getElementById("mensajeInicio");
+
+            estado.textContent = "Verificando...";
+
+            try {
+                const datos = await pedirDatos("/");
+                estado.textContent = "Conectada";
+                mensaje.textContent =
+                    "Servidor conectado correctamente. Servicio: " +
+                    (datos.servicio || "MEDIRED API") +
+                    ". Versión: " + (datos.version || "No especificada") + ".";
+
+                await cargarResumen();
+            } catch (error) {
+                estado.textContent = "Sin conexión";
+                mensaje.textContent =
+                    "No fue posible conectar con la API. Comprueba que el servidor esté encendido. Detalle: " +
+                    error.message;
+            }
+        }
+
+        async function cargarResumen() {
+            try {
+                const datos = await pedirDatos("/api/medicamentos");
+                document.getElementById("totalMedicamentos").textContent =
+                    obtenerLista(datos).length;
+            } catch (error) {
+                document.getElementById("totalMedicamentos").textContent = "—";
+            }
+
+            try {
+                const datos = await pedirDatos("/api/sedes");
+                document.getElementById("totalSedes").textContent =
+                    obtenerLista(datos).length;
+            } catch (error) {
+                document.getElementById("totalSedes").textContent = "—";
+            }
+        }
+
+        function mostrarTabla(contenedor, tablaId, datos) {
+            const elemento = document.getElementById(contenedor);
+            const lista = obtenerLista(datos);
+
+            if (lista.length === 0) {
+                elemento.innerHTML =
+                    '<p class="mensaje">No hay registros para mostrar o la respuesta tiene otro formato.</p>';
+                return;
+            }
+
+            const columnas = Object.keys(lista[0]);
+
+            let html = '<table id="' + tablaId + '"><thead><tr>';
+
+            for (let i = 0; i < columnas.length; i++) {
+                html += "<th>" + escaparHTML(columnas[i]) + "</th>";
+            }
+
+            html += "</tr></thead><tbody>";
+
+            for (let i = 0; i < lista.length; i++) {
+                html += "<tr>";
+
+                for (let j = 0; j < columnas.length; j++) {
+                    let valor = lista[i][columnas[j]];
+
+                    if (valor === null || valor === undefined) {
+                        valor = "—";
+                    } else if (typeof valor === "object") {
+                        valor = JSON.stringify(valor);
+                    }
+
+                    html += "<td>" + escaparHTML(String(valor)) + "</td>";
+                }
+
+                html += "</tr>";
+            }
+
+            html += "</tbody></table>";
+            elemento.innerHTML = html;
+        }
+
+        function escaparHTML(texto) {
+            return texto.replace(/[&<>"']/g, function (caracter) {
+                const equivalencias = {
+                    "&": "&amp;",
+                    "<": "&lt;",
+                    ">": "&gt;",
+                    '"': "&quot;",
+                    "'": "&#039;"
+                };
+
+                return equivalencias[caracter];
+            });
+        }
+
+        async function cargarMedicamentos(boton) {
+            mostrarSeccion("medicamentos", boton);
+
+            const resultado = document.getElementById("resultadoMedicamentos");
+            resultado.innerHTML = '<p class="mensaje">Consultando medicamentos...</p>';
+
+            try {
+                const datos = await pedirDatos("/api/medicamentos");
+                mostrarTabla("resultadoMedicamentos", "tablaMedicamentos", datos);
+
+                document.getElementById("totalMedicamentos").textContent =
+                    obtenerLista(datos).length;
+            } catch (error) {
+                resultado.innerHTML =
+                    '<p class="mensaje">No se pudieron cargar los medicamentos. ' +
+                    escaparHTML(error.message) + '</p>';
+            }
+        }
+
+        async function cargarSedes(boton) {
+            mostrarSeccion("sedes", boton);
+
+            const resultado = document.getElementById("resultadoSedes");
+            resultado.innerHTML = '<p class="mensaje">Consultando sedes...</p>';
+
+            try {
+                const datos = await pedirDatos("/api/sedes");
+                mostrarTabla("resultadoSedes", "tablaSedes", datos);
+
+                document.getElementById("totalSedes").textContent =
+                    obtenerLista(datos).length;
+            } catch (error) {
+                resultado.innerHTML =
+                    '<p class="mensaje">No se pudieron cargar las sedes. ' +
+                    escaparHTML(error.message) + '</p>';
+            }
+        }
+
+        async function mostrarInventario(boton) {
+            mostrarSeccion("inventario", boton);
+        }
+
+        async function consultarInventario() {
+            const id = document.getElementById("idMedicamento").value;
+            const resultado = document.getElementById("resultadoInventario");
+
+            if (!id || Number(id) < 1) {
+                resultado.textContent = "Ingresa un ID válido.";
+                return;
+            }
+
+            resultado.textContent = "Consultando inventario...";
+
+            try {
+                const datos = await pedirDatos("/api/inventario/" + encodeURIComponent(id));
+
+                resultado.textContent = JSON.stringify(datos, null, 2);
+            } catch (error) {
+                resultado.textContent =
+                    "No se pudo consultar el inventario. " + error.message;
+            }
+        }
+
+        function filtrarTabla(id, texto) {
+            const tabla = document.getElementById(id);
+            if (!tabla) return;
+
+            const filas = tabla.querySelectorAll("tbody tr");
+            const busqueda = texto.toLowerCase();
+
+            for (let i = 0; i < filas.length; i++) {
+                const contenido = filas[i].textContent.toLowerCase();
+                filas[i].style.display =
+                    contenido.includes(busqueda) ? "" : "none";
+            }
+        }
+
+        verificarSistema();
+    </script>
+</body>
+</html>
