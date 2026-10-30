@@ -9,6 +9,8 @@ Documentación interactiva (Swagger UI) en:
 """
 
 from fastapi import FastAPI
+from fastapi.responses import FileResponse
+from pathlib import Path
 from fastapi.middleware.cors import CORSMiddleware
 
 from config import CORS_ORIGINS
@@ -38,3 +40,8 @@ app.include_router(inventario.router)
 def root():
     """Health check simple."""
     return {"status": "ok", "servicio": "MEDIRED API", "version": "0.1.0"}
+
+@app.get("/pagina", include_in_schema=False)
+def pagina():
+    archivo = Path(__file__).resolve().parent.parent / "frontend" / "index.html"
+    return FileResponse(archivo)
