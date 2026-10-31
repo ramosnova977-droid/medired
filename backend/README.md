@@ -17,6 +17,22 @@ API en **FastAPI** conectada al schema `medired` que ya creaste con
 | POST | `/api/inventario/salida` | Registrar salida (valida stock disponible) |
 | GET | `/api/inventario/movimientos/{id_medicamento}` | Historial de trazabilidad |
 
+## Endpoints nuevos (v0.2)
+
+| Método | Endpoint | Acceso |
+|---|---|---|
+| GET | `/api/inventario` | público · todo el inventario en una consulta |
+| POST | `/api/auth/registro` | público · crea cuenta de paciente |
+| POST | `/api/auth/login` | público · correo o documento + contraseña |
+| GET/PATCH | `/api/auth/me` | sesión · ver / editar perfil |
+| POST | `/api/auth/cambiar-password` | sesión |
+| GET/PATCH | `/api/auth/usuarios` | administrador |
+| GET | `/api/reportes/inventario` | público |
+| GET | `/api/reportes/movimientos[/resumen]` | operador / analista / administrador |
+| POST | `/api/inventario/entrada` · `/salida` | operador / administrador (Bearer token) |
+
+Ver `GUIA_VSCODE.md` para instalación paso a paso. En Swagger (`/docs`) usa el botón **Authorize** y pega el token de `/api/auth/login`.
+
 ## Cómo correrlo
 
 ```bash

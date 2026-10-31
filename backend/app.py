@@ -14,13 +14,13 @@ from pathlib import Path
 from fastapi.middleware.cors import CORSMiddleware
 
 from config import CORS_ORIGINS
-from routes import medicamentos, sedes, inventario
+from routes import auth, medicamentos, sedes, inventario, reportes
 
 app = FastAPI(
     title="MEDIRED API",
     description="Plataforma interoperable para consulta, gestión y "
                  "trazabilidad de medicamentos (piloto Nueva EPS - Bogotá).",
-    version="0.1.0",
+    version="0.2.0",
 )
 
 app.add_middleware(
@@ -34,12 +34,14 @@ app.add_middleware(
 app.include_router(medicamentos.router)
 app.include_router(sedes.router)
 app.include_router(inventario.router)
+app.include_router(auth.router)
+app.include_router(reportes.router)
 
 
 @app.get("/", tags=["health"])
 def root():
     """Health check simple."""
-    return {"status": "ok", "servicio": "MEDIRED API", "version": "0.1.0"}
+    return {"status": "ok", "servicio": "MEDIRED API", "version": "0.2.0"}
 
 @app.get("/pagina", include_in_schema=False)
 def pagina():

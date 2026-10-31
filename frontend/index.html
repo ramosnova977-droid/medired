@@ -1,974 +1,1459 @@
-
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="theme-color" content="#4263eb">
-    <title>MEDIRED | Gestión de medicamentos</title>
-
-    <style>
-        :root {
-            --azul: #4263eb;
-            --azul-oscuro: #3048b8;
-            --lavanda: #eeeaff;
-            --lavanda-claro: #f7f5ff;
-            --fondo: #f5f6fc;
-            --texto: #252b45;
-            --suave: #777f98;
-            --borde: #e7e9f3;
-            --blanco: #ffffff;
-            --verde: #15966b;
-            --rojo: #d94f68;
-        }
-
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: "Segoe UI", Arial, sans-serif;
-        }
-
-        body {
-            background: var(--fondo);
-            color: var(--texto);
-            font-size: 14px;
-        }
-
-        header {
-            background: linear-gradient(115deg, #344fc4, #7968d9);
-            color: white;
-            padding: 22px 32px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            flex-wrap: wrap;
-            gap: 14px;
-            box-shadow: 0 4px 18px #344fc41c;
-        }
-
-        header h1 {
-            font-size: 28px;
-            letter-spacing: 3px;
-            font-weight: 800;
-        }
-
-        header p {
-            margin-top: 6px;
-            font-size: 13px;
-            color: #eeecff;
-        }
-
-        .estado {
-            background: #ffffff24;
-            border: 1px solid #ffffff40;
-            color: white;
-            padding: 10px 16px;
-            border-radius: 24px;
-            font-size: 13px;
-            font-weight: 600;
-        }
-
-        .contenedor {
-            display: flex;
-            min-height: calc(100vh - 90px);
-        }
-
-        aside {
-            width: 250px;
-            flex-shrink: 0;
-            background: var(--blanco);
-            padding: 25px 16px;
-            border-right: 1px solid var(--borde);
-        }
-
-        aside h3 {
-            color: #9298af;
-            font-size: 11px;
-            letter-spacing: 1.3px;
-            margin: 0 12px 17px;
-        }
-
-        .grupo-menu {
-            margin-bottom: 25px;
-        }
-
-        .menu {
-            width: 100%;
-            display: block;
-            text-align: left;
-            border: none;
-            background: transparent;
-            padding: 13px 14px;
-            margin-bottom: 6px;
-            border-radius: 10px;
-            color: #606982;
-            cursor: pointer;
-            font-size: 14px;
-            font-weight: 500;
-            transition: background 0.2s, color 0.2s;
-        }
-
-        .menu:hover {
-            background: var(--lavanda-claro);
-            color: var(--azul);
-        }
-
-        .menu.activo {
-            background: var(--lavanda);
-            color: var(--azul-oscuro);
-            font-weight: 700;
-            box-shadow: inset 3px 0 var(--azul);
-        }
-
-        main {
-            flex: 1;
-            padding: 30px;
-            min-width: 0;
-        }
-
-        .bienvenida {
-            margin-bottom: 25px;
-        }
-
-        .bienvenida h2 {
-            font-size: 27px;
-            font-weight: 750;
-            margin-bottom: 8px;
-        }
-
-        .bienvenida p {
-            color: var(--suave);
-            line-height: 1.6;
-        }
-
-        .tarjetas {
-            display: grid;
-            grid-template-columns: repeat(3, minmax(0, 1fr));
-            gap: 18px;
-            margin-bottom: 26px;
-        }
-
-        .tarjeta {
-            background: white;
-            padding: 23px;
-            border-radius: 15px;
-            border: 1px solid var(--borde);
-            box-shadow: 0 5px 20px #252b4508;
-            transition: transform 0.2s;
-        }
-
-        .tarjeta:hover {
-            transform: translateY(-3px);
-        }
-
-        .tarjeta .icono {
-            width: 42px;
-            height: 42px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: var(--lavanda);
-            color: var(--azul);
-            border-radius: 12px;
-            font-size: 21px;
-            margin-bottom: 16px;
-        }
-
-        .tarjeta p {
-            color: var(--suave);
-            font-size: 13px;
-            margin-bottom: 12px;
-        }
-
-        .tarjeta h3 {
-            font-size: 30px;
-            color: var(--azul);
-            overflow-wrap: anywhere;
-        }
-
-        .panel {
-            background: white;
-            padding: 24px;
-            border-radius: 15px;
-            border: 1px solid var(--borde);
-            box-shadow: 0 5px 20px #252b4508;
-            margin-bottom: 22px;
-        }
-
-        .panel-cabecera {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 12px;
-            margin-bottom: 20px;
-        }
-
-        .panel h3 {
-            font-size: 17px;
-            font-weight: 700;
-        }
-
-        button.accion {
-            background: var(--azul);
-            color: white;
-            border: none;
-            border-radius: 9px;
-            padding: 11px 16px;
-            cursor: pointer;
-            font-weight: 600;
-            font-size: 13px;
-            transition: background 0.2s;
-        }
-
-        button.accion:hover {
-            background: var(--azul-oscuro);
-        }
-
-        button.secundario {
-            background: var(--lavanda);
-            color: var(--azul-oscuro);
-        }
-
-        button.secundario:hover {
-            background: #ded7ff;
-        }
-
-        input, select {
-            padding: 12px 14px;
-            border: 1px solid #dfe2ef;
-            border-radius: 9px;
-            width: 100%;
-            max-width: 360px;
-            background: white;
-            color: var(--texto);
-            font-size: 14px;
-        }
-
-        input:focus, select:focus {
-            border-color: var(--azul);
-            outline: 2px solid #4263eb18;
-        }
-
-        .buscador {
-            margin-bottom: 18px;
-        }
-
-        .tabla-contenedor {
-            overflow-x: auto;
-            border: 1px solid var(--borde);
-            border-radius: 10px;
-        }
-
-        table {
-            border-collapse: collapse;
-            width: 100%;
-            font-size: 13px;
-            background: white;
-        }
-
-        th, td {
-            padding: 14px 13px;
-            border-bottom: 1px solid #edf0f7;
-            text-align: left;
-        }
-
-        th {
-            background: var(--lavanda-claro);
-            color: #555d7b;
-            font-weight: 700;
-            white-space: nowrap;
-        }
-
-        tbody tr:hover {
-            background: #faf9ff;
-        }
-
-        tbody tr:last-child td {
-            border-bottom: none;
-        }
-
-        .mensaje {
-            padding: 17px;
-            color: #656e89;
-            background: var(--lavanda-claro);
-            border: 1px solid #eae5ff;
-            border-radius: 10px;
-            margin-top: 12px;
-            line-height: 1.6;
-            overflow-wrap: anywhere;
-        }
-
-        .mensaje.exito {
-            background: #effaf5;
-            border-color: #c9efdd;
-            color: #14734f;
-        }
-
-        .mensaje.error {
-            background: #fff2f3;
-            border-color: #ffd9de;
-            color: #a82f48;
-        }
-
-        .modulo-grid {
-            display: grid;
-            grid-template-columns: repeat(2, minmax(0, 1fr));
-            gap: 18px;
-        }
-
-        .modulo {
-            background: white;
-            padding: 23px;
-            border-radius: 15px;
-            border: 1px solid var(--borde);
-        }
-
-        .modulo .icono {
-            font-size: 25px;
-            margin-bottom: 15px;
-        }
-
-        .modulo h3 {
-            margin-bottom: 10px;
-            font-size: 16px;
-        }
-
-        .modulo p {
-            color: var(--suave);
-            line-height: 1.6;
-        }
-
-        .etiqueta {
-            display: inline-block;
-            margin-top: 16px;
-            padding: 6px 10px;
-            border-radius: 20px;
-            font-size: 11px;
-            font-weight: 700;
-            background: #fff3dc;
-            color: #92641b;
-        }
-
-        .oculto {
-            display: none !important;
-        }
-
-        pre {
-            white-space: pre-wrap;
-            overflow-wrap: anywhere;
-            font-family: Consolas, monospace;
-            font-size: 13px;
-        }
-
-        footer {
-            color: #9298af;
-            text-align: center;
-            padding: 25px 10px;
-            font-size: 12px;
-        }
-
-        @media (max-width: 1050px) {
-            aside {
-                width: 220px;
-            }
-
-            main {
-                padding: 22px;
-            }
-
-            .tarjetas {
-                gap: 12px;
-            }
-        }
-
-        @media (max-width: 800px) {
-            .contenedor {
-                flex-direction: column;
-            }
-
-            aside {
-                width: 100%;
-                padding: 15px;
-                border-right: none;
-                border-bottom: 1px solid var(--borde);
-            }
-
-            .grupo-menu {
-                margin-bottom: 10px;
-            }
-
-            .menu {
-                display: inline-block;
-                width: auto;
-                margin: 3px;
-                padding: 10px 12px;
-            }
-
-            .menu.activo {
-                box-shadow: inset 0 -3px var(--azul);
-            }
-
-            .tarjetas {
-                grid-template-columns: 1fr;
-            }
-
-            .modulo-grid {
-                grid-template-columns: 1fr;
-            }
-
-            main {
-                padding: 19px 14px;
-            }
-
-            header {
-                padding: 20px;
-            }
-
-            .panel {
-                padding: 18px;
-            }
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MEDIRED | Disponibilidad de medicamentos</title>
+<meta name="description" content="Consulta en qué sedes de tu EPS hay disponibilidad de medicamentos, en tiempo real.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23087f8c'/%3E%3Cpath d='M16 7v18M7 16h18' stroke='white' stroke-width='4' stroke-linecap='round'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<style>
+:root{
+  --teal:#087f8c; --teal-d:#056571; --teal-l:#e3f4f5; --teal-xl:#f1fafa;
+  --ink:#143240; --mut:#5b717e; --line:#e1e9ed; --bg:#f2f6f8; --card:#fff;
+  --ok:#157a3d; --ok-bg:#e2f5e9; --warn:#955f00; --warn-bg:#fdf1cf;
+  --crit:#c2410c; --crit-bg:#ffe8da; --out:#b42318; --out-bg:#fde4e2; --none:#64748b; --none-bg:#edf1f4;
+  --r:14px; --shadow:0 1px 2px rgba(20,50,64,.05),0 6px 20px rgba(20,50,64,.06);
+  --shadow-h:0 2px 4px rgba(20,50,64,.06),0 12px 28px rgba(20,50,64,.12);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:Inter,"Segoe UI",system-ui,-apple-system,Roboto,Arial,sans-serif;background:var(--bg);color:var(--ink);line-height:1.5;-webkit-font-smoothing:antialiased}
+button,input,select{font:inherit;color:inherit}
+button{cursor:pointer}
+a{color:var(--teal);text-decoration:none}
+a:hover{text-decoration:underline}
+:focus-visible{outline:3px solid #5cc6d0;outline-offset:2px;border-radius:8px}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+
+/* ---------- Header ---------- */
+.top{position:sticky;top:0;z-index:50;background:rgba(255,255,255,.92);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+.top-in{max-width:1240px;margin:0 auto;padding:10px 24px;display:flex;align-items:center;gap:18px;flex-wrap:wrap}
+.brand{display:flex;align-items:center;gap:10px;color:var(--ink);text-decoration:none!important}
+.brand svg{flex:none}
+.brand b{font-size:21px;letter-spacing:.14em;color:var(--teal-d)}
+.brand small{display:block;font-size:11px;color:var(--mut);letter-spacing:0;margin-top:-3px}
+nav{display:flex;gap:4px;margin-left:12px}
+nav a{padding:9px 15px;border-radius:10px;color:var(--mut);font-weight:600;font-size:14.5px;text-decoration:none!important}
+nav a:hover{background:var(--teal-xl);color:var(--teal-d)}
+nav a.on{background:var(--teal-l);color:var(--teal-d)}
+.top-r{margin-left:auto;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.chip{display:inline-flex;align-items:center;gap:7px;padding:7px 12px;border-radius:999px;font-size:12.5px;font-weight:600;background:var(--none-bg);color:var(--mut);border:1px solid transparent}
+.chip i{width:8px;height:8px;border-radius:50%;background:currentColor}
+.chip.live{background:var(--ok-bg);color:var(--ok)}
+.chip.live i{animation:pulse 2s infinite}
+.chip.demo{background:var(--warn-bg);color:var(--warn)}
+.chip.load{background:var(--teal-l);color:var(--teal-d)}
+@keyframes pulse{50%{opacity:.25}}
+.iconbtn{border:1px solid var(--line);background:#fff;border-radius:10px;padding:7px 12px;font-size:13px;font-weight:600;color:var(--mut);display:inline-flex;align-items:center;gap:6px}
+.iconbtn:hover{border-color:var(--teal);color:var(--teal-d)}
+.iconbtn.on{background:var(--teal);border-color:var(--teal);color:#fff}
+.iconbtn svg{width:15px;height:15px}
+.spin svg{animation:rot .8s linear infinite}
+@keyframes rot{to{transform:rotate(360deg)}}
+
+.banner{max-width:1240px;margin:14px auto 0;padding:0 24px}
+.banner>div{display:flex;gap:12px;align-items:center;flex-wrap:wrap;padding:11px 16px;border-radius:12px;background:var(--warn-bg);color:#6b4500;font-size:13.5px;border:1px solid #f1d98a}
+.banner button{margin-left:auto;background:#fff;border:1px solid #e5c867;border-radius:8px;padding:5px 12px;font-weight:600;color:#6b4500}
+
+main{max-width:1240px;margin:0 auto;padding:22px 24px 60px;min-height:70vh}
+h1,h2,h3{line-height:1.2}
+
+/* ---------- Hero ---------- */
+.hero{position:relative;overflow:hidden;background:linear-gradient(135deg,#066b77 0%,#0a8f9c 55%,#25b3b9 100%);border-radius:22px;color:#fff;padding:38px 38px 34px;box-shadow:var(--shadow)}
+.hero:before,.hero:after{content:"";position:absolute;border-radius:50%;background:rgba(255,255,255,.08)}
+.hero:before{width:340px;height:340px;right:-80px;top:-140px}
+.hero:after{width:200px;height:200px;right:150px;bottom:-130px}
+.hero>*{position:relative}
+.hero h1{font-size:clamp(26px,3.6vw,38px);font-weight:800;letter-spacing:-.02em;max-width:720px}
+.hero p{margin-top:8px;opacity:.9;font-size:16px;max-width:620px}
+.search{margin-top:22px;display:flex;background:#fff;border-radius:16px;padding:6px;box-shadow:0 8px 30px rgba(0,40,50,.25);max-width:760px}
+.search label{display:flex;align-items:center;flex:1;gap:10px;padding:0 14px;color:var(--mut)}
+.search input{flex:1;border:0;outline:0;font-size:17px;padding:13px 0;background:transparent;color:var(--ink);min-width:0}
+.search input::placeholder{color:#8da0ab}
+.search kbd{align-self:center;line-height:1.5;margin-right:8px;font:600 12px/1.5 ui-monospace,monospace;border:1px solid var(--line);border-bottom-width:2px;border-radius:6px;padding:1px 7px;color:var(--mut)}
+.search .clear{border:0;background:var(--none-bg);color:var(--mut);width:28px;height:28px;border-radius:50%;font-size:15px;line-height:1}
+.chips{display:flex;gap:8px;flex-wrap:wrap;margin-top:16px;align-items:center}
+.chips span{font-size:13px;opacity:.85;margin-right:2px}
+.chips button{background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.32);color:#fff;border-radius:999px;padding:5px 13px;font-size:13px;font-weight:600}
+.chips button:hover{background:rgba(255,255,255,.28)}
+
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin:18px 0 8px}
+.kpi{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:16px 18px;box-shadow:var(--shadow);display:flex;gap:14px;align-items:center}
+.kpi .ic{width:42px;height:42px;border-radius:12px;display:grid;place-items:center;flex:none;font-size:20px;background:var(--teal-l);color:var(--teal-d)}
+.kpi.w .ic{background:var(--warn-bg);color:var(--warn)}
+.kpi.o .ic{background:var(--out-bg);color:var(--out)}
+.kpi b{display:block;font-size:26px;line-height:1;letter-spacing:-.02em}
+.kpi span{font-size:13px;color:var(--mut)}
+button.kpi{text-align:left;width:100%}
+button.kpi:hover{box-shadow:var(--shadow-h);border-color:#cfe0e5}
+
+/* ---------- Filters ---------- */
+.filters{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:22px 0 14px}
+.filters .count{font-weight:700;font-size:15px;margin-right:auto}
+.filters .count small{font-weight:500;color:var(--mut)}
+.sel{display:flex;align-items:center;gap:8px;background:#fff;border:1px solid var(--line);border-radius:10px;padding:0 10px}
+.sel span{font-size:12.5px;color:var(--mut);white-space:nowrap}
+.sel select{border:0;outline:0;background:transparent;padding:9px 2px;font-weight:600;font-size:14px;max-width:190px}
+.sel:focus-within{border-color:var(--teal);box-shadow:0 0 0 3px #5cc6d033}
+.seg{display:inline-flex;background:#fff;border:1px solid var(--line);border-radius:10px;padding:3px}
+.seg button{border:0;background:transparent;padding:6px 12px;border-radius:7px;font-size:13.5px;font-weight:600;color:var(--mut)}
+.seg button.on{background:var(--teal);color:#fff}
+.field{background:#fff;border:1px solid var(--line);border-radius:10px;padding:9px 12px;font-size:14px;min-width:220px}
+.field:focus{outline:0;border-color:var(--teal);box-shadow:0 0 0 3px #5cc6d033}
+
+/* ---------- Cards ---------- */
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(310px,1fr));gap:16px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:18px;box-shadow:var(--shadow);transition:.18s;display:flex;flex-direction:column;gap:10px;text-align:left;width:100%;position:relative}
+a.card,button.card{color:inherit;text-decoration:none!important}
+a.card:hover,button.card:hover{transform:translateY(-3px);box-shadow:var(--shadow-h);border-color:#c8dce2}
+.card h3{font-size:17px;letter-spacing:-.01em}
+.card .sub{font-size:13.5px;color:var(--mut)}
+.card .meta{display:flex;gap:6px;flex-wrap:wrap}
+.card .foot{margin-top:auto;padding-top:10px;border-top:1px dashed var(--line);display:flex;justify-content:space-between;gap:10px;align-items:center;font-size:13px;color:var(--mut)}
+.card .foot b{color:var(--ink)}
+.tag{font-size:11.5px;font-weight:700;padding:3px 9px;border-radius:999px;background:var(--none-bg);color:var(--mut);letter-spacing:.02em}
+.tag.rx{background:#eaf0ff;color:#2d4fb0}
+.tag.otc{background:#eaf7ef;color:#1d7a46}
+.pill{display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border-radius:999px;font-size:12.5px;font-weight:700;white-space:nowrap}
+.pill:before{content:"";width:7px;height:7px;border-radius:50%;background:currentColor}
+.ok{color:var(--ok)} .warn{color:var(--warn)} .crit{color:var(--crit)} .out{color:var(--out)} .none{color:var(--none)}
+.pill.ok{background:var(--ok-bg)} .pill.warn{background:var(--warn-bg)} .pill.crit{background:var(--crit-bg)} .pill.out{background:var(--out-bg)} .pill.none{background:var(--none-bg)}
+.card .top-row{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}
+.dots{display:flex;gap:4px;flex-wrap:wrap}
+.dot{width:14px;height:14px;border-radius:4px;background:currentColor;display:inline-block}
+.dot.none{background:transparent;border:1.5px dashed #c3cfd6}
+.dotlabel{font-size:12px;color:var(--mut);margin-bottom:5px;display:block}
+
+.empty{text-align:center;padding:60px 20px;background:#fff;border:1px dashed #c8d6dc;border-radius:var(--r);color:var(--mut)}
+.empty b{display:block;color:var(--ink);font-size:18px;margin:8px 0 4px}
+.empty button,.btn{background:var(--teal);color:#fff;border:0;border-radius:10px;padding:10px 16px;font-weight:700;font-size:14px;display:inline-flex;gap:7px;align-items:center;text-decoration:none!important}
+.empty button{margin-top:14px}
+.btn:hover,.empty button:hover{background:var(--teal-d)}
+.btn.ghost{background:#fff;color:var(--teal-d);border:1px solid #bcd9de}
+.btn.ghost:hover{background:var(--teal-xl)}
+.btn.sm{padding:6px 11px;font-size:13px;border-radius:8px}
+
+.skel{height:168px;border-radius:var(--r);background:linear-gradient(90deg,#e9f0f3 25%,#f5f9fa 37%,#e9f0f3 63%);background-size:400% 100%;animation:sh 1.3s infinite}
+@keyframes sh{0%{background-position:100% 0}100%{background-position:0 0}}
+
+/* ---------- Detail ---------- */
+.crumbs{font-size:13.5px;margin-bottom:12px;display:flex;gap:8px;color:var(--mut);align-items:center;flex-wrap:wrap}
+.crumbs a{font-weight:600}
+.head{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:24px 26px;box-shadow:var(--shadow);display:flex;gap:24px;justify-content:space-between;flex-wrap:wrap}
+.head h1{font-size:clamp(24px,3vw,32px);letter-spacing:-.02em}
+.head .sub{color:var(--mut);margin-top:4px}
+.head .meta{display:flex;gap:7px;flex-wrap:wrap;margin-top:12px}
+.facts{display:flex;gap:26px;flex-wrap:wrap;align-items:center}
+.fact b{display:block;font-size:28px;letter-spacing:-.02em;line-height:1.05}
+.fact span{font-size:12.5px;color:var(--mut)}
+.info{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px 24px;margin-top:16px;font-size:14px}
+.info div span{display:block;font-size:12px;color:var(--mut);text-transform:uppercase;letter-spacing:.06em;font-weight:700}
+.split{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(0,1fr);gap:18px;margin-top:18px;align-items:start}
+.panel{background:var(--card);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--shadow);overflow:hidden}
+.panel>h2{font-size:16px;padding:16px 18px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+.panel>h2 small{font-weight:500;color:var(--mut);font-size:13px}
+.rows{display:flex;flex-direction:column}
+.row{display:grid;grid-template-columns:minmax(150px,1.3fr) minmax(130px,1fr) auto;gap:10px 16px;align-items:center;padding:14px 18px;border-bottom:1px solid #eef3f5}
+.row:last-child{border-bottom:0}
+.row:hover{background:var(--teal-xl)}
+.row .nm{font-weight:700;display:block;color:var(--ink)}
+.row .nm:hover{color:var(--teal-d)}
+.row small{color:var(--mut);font-size:12.5px;display:block}
+.row .acts{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}
+.qty{display:flex;align-items:center;gap:10px}
+.qty b{font-size:18px;min-width:44px;letter-spacing:-.01em}
+.bar{flex:1;height:8px;border-radius:99px;background:#e8eff2;position:relative;min-width:60px}
+.bar i{display:block;height:100%;border-radius:99px;background:currentColor}
+.bar u{position:absolute;top:-3px;bottom:-3px;width:2px;background:#8aa0ab;border-radius:2px}
+.open{font-size:12px;font-weight:700;padding:2px 8px;border-radius:99px}
+.open.y{background:var(--ok-bg);color:var(--ok)} .open.n{background:var(--none-bg);color:var(--mut)}
+.mapbox{height:440px;background:#e6eef0;position:relative}
+.mapbox.tall{height:640px;border-radius:0}
+.legend{display:flex;gap:14px;flex-wrap:wrap;padding:11px 18px;font-size:12.5px;color:var(--mut);border-top:1px solid var(--line);background:#fafcfd}
+.legend span{display:inline-flex;gap:6px;align-items:center}
+.legend i{width:11px;height:11px;border-radius:50%;background:currentColor}
+.pinwrap{background:none;border:0}
+.pin{display:grid;place-items:center;width:30px;height:30px;border-radius:50% 50% 50% 4px;transform:rotate(-45deg);background:currentColor;box-shadow:0 3px 8px rgba(0,0,0,.35);border:2px solid #fff}
+.pin b{transform:rotate(45deg);color:#fff;font-size:11px;font-weight:800;letter-spacing:-.02em}
+.pin.none{color:#8696a0}
+.svgmap{width:100%;height:100%;display:block;background:linear-gradient(#eaf3f4,#dfeced)}
+.svgmap g{cursor:pointer}
+.svgmap text{font:700 10px Inter,Arial,sans-serif;fill:#fff;pointer-events:none}
+.svgmap text.lb{fill:#2f4a57;font-weight:600;font-size:9.5px;paint-order:stroke;stroke:#ffffffcc;stroke-width:3px}
+.leaflet-container{font:inherit}
+.maphint{position:absolute;left:10px;bottom:10px;z-index:400;background:#fffffff0;border-radius:8px;padding:4px 9px;font-size:11.5px;color:var(--mut);box-shadow:var(--shadow)}
+
+/* ---------- Matrix ---------- */
+.mx-wrap{overflow:auto;max-height:calc(100vh - 250px);border-top:1px solid var(--line)}
+table.mx{border-collapse:separate;border-spacing:0;font-size:13px;min-width:100%}
+.mx th,.mx td{border-bottom:1px solid #eef3f5;border-right:1px solid #f3f7f8;padding:0;text-align:center}
+.mx thead th{position:sticky;top:0;z-index:3;background:#f7fafb;height:118px;vertical-align:bottom;padding:8px 2px}
+.mx thead th span{writing-mode:vertical-rl;transform:rotate(180deg);font-weight:700;color:var(--mut);font-size:12.5px;white-space:nowrap;display:inline-block}
+.mx thead th a{color:inherit;text-decoration:none}
+.mx thead th:hover span{color:var(--teal-d)}
+.mx th.first,.mx td.first{position:sticky;left:0;z-index:2;background:#fff;text-align:left;padding:8px 14px;min-width:210px;border-right:1px solid var(--line)}
+.mx thead th.first{z-index:4;background:#f7fafb;vertical-align:bottom;color:var(--mut)}
+.mx td.first a{font-weight:700;color:var(--ink)}
+.mx td.first a:hover{color:var(--teal-d)}
+.mx td.first small{display:block;color:var(--mut);font-size:12px}
+.mx td.c{min-width:46px;height:46px}
+.mx td.c a{display:grid;place-items:center;height:100%;font-weight:700;color:inherit;text-decoration:none;font-size:13px}
+.mx td.c.ok{background:var(--ok-bg);color:var(--ok)}
+.mx td.c.warn{background:var(--warn-bg);color:var(--warn)}
+.mx td.c.crit{background:var(--crit-bg);color:var(--crit)}
+.mx td.c.out{background:var(--out-bg);color:var(--out)}
+.mx td.c.none{color:#b3c0c8;background:repeating-linear-gradient(45deg,#fff,#fff 5px,#f6f9fa 5px,#f6f9fa 10px)}
+.mx td.c a:hover{filter:brightness(.93);box-shadow:inset 0 0 0 2px currentColor}
+.mx td.tot{min-width:70px;font-weight:800;background:#fafcfd}
+.mx tr:hover td.first{background:var(--teal-xl)}
+
+/* ---------- Modal / toast ---------- */
+.modal{position:fixed;inset:0;background:rgba(10,30,40,.5);backdrop-filter:blur(3px);display:none;place-items:center;z-index:100;padding:16px}
+.modal.on{display:grid}
+.dlg{background:#fff;border-radius:20px;width:min(460px,100%);padding:24px;box-shadow:0 30px 80px rgba(0,0,0,.35);animation:pop .18s ease-out}
+@keyframes pop{from{transform:scale(.96);opacity:0}}
+.dlg h2{font-size:20px}
+.dlg .sub{color:var(--mut);font-size:14px;margin:4px 0 16px}
+.dlg label{display:block;font-size:13px;font-weight:700;margin:14px 0 6px}
+.dlg .field{width:100%}
+.dlg .seg{width:100%}
+.dlg .seg button{flex:1;padding:9px}
+.dlg .seg button.on.salida{background:var(--out)}
+.dlg .cur{display:flex;gap:12px;align-items:center;background:var(--teal-xl);border-radius:12px;padding:12px 14px;margin-bottom:4px}
+.dlg .cur b{font-size:26px}
+.dlg .err{color:var(--out);background:var(--out-bg);padding:9px 12px;border-radius:9px;font-size:13.5px;margin-top:12px}
+.dlg .act{display:flex;gap:10px;justify-content:flex-end;margin-top:20px}
+.dlg .btn{border:0}
+.dlg .btn.ghost{border:1px solid #bcd9de}
+.toast{position:fixed;left:50%;bottom:24px;transform:translate(-50%,30px);opacity:0;background:#143240;color:#fff;padding:12px 18px;border-radius:12px;font-size:14px;font-weight:600;z-index:200;transition:.25s;pointer-events:none;box-shadow:var(--shadow-h);max-width:90vw}
+.toast.on{opacity:1;transform:translate(-50%,0)}
+.toast.bad{background:var(--out)}
+
+table.mv{width:100%;border-collapse:collapse;font-size:13.5px}
+.mv th{text-align:left;color:var(--mut);font-weight:700;font-size:12px;text-transform:uppercase;letter-spacing:.05em;padding:10px 18px;background:#f8fbfc}
+.mv td{padding:10px 18px;border-top:1px solid #eef3f5}
+.mv .tipo{font-weight:700}
+.mv .tipo.entrada{color:var(--ok)} .mv .tipo.salida{color:var(--out)}
+.mvwrap{overflow-x:auto}
+.note{padding:16px 18px;color:var(--mut);font-size:14px}
+footer{max-width:1240px;margin:0 auto;padding:0 24px 40px;text-align:center;color:#7d909a;font-size:12.5px}
+
+@media (max-width:1000px){
+  .split{grid-template-columns:1fr}
+  .kpis{grid-template-columns:repeat(2,1fr)}
+  .mapbox{height:340px}
+}
+@media (max-width:700px){
+  .top-in{padding:10px 14px;gap:10px}
+  nav{order:3;width:100%;margin:0;overflow-x:auto}
+  nav a{flex:1;text-align:center;padding:9px 8px;white-space:nowrap}
+  .top-r{margin-left:auto}
+  .brand small,.hide-s{display:none}
+  main{padding:14px 14px 50px}
+  .hero{padding:26px 20px;border-radius:18px}
+  .search kbd{display:none}
+  .row{grid-template-columns:1fr;gap:8px}
+  .row .acts{justify-content:flex-start}
+  .head{padding:18px}
+  .kpi{padding:12px 14px}.kpi b{font-size:22px}.kpi .ic{width:36px;height:36px}
+  .field{min-width:0;width:100%}
+  .filters .count{width:100%}
+  .mx th.first,.mx td.first{min-width:150px}
+}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+
+/* ---------- Cuentas / formularios ---------- */
+.authbox{display:inline-flex;align-items:center;gap:8px}
+.me{display:inline-flex;align-items:center;gap:9px;padding:4px 12px 4px 5px;border:1px solid var(--line);border-radius:999px;background:#fff;color:var(--ink);text-decoration:none!important}
+.me:hover{border-color:var(--teal)}
+.me b{display:block;font-size:13px;line-height:1.1}.me small{display:block;font-size:11px;color:var(--mut)}
+.av{width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,#087f8c,#25b3b9);color:#fff;display:grid;place-items:center;font-weight:800;font-size:13px;flex:none}
+.av.big{width:64px;height:64px;font-size:22px}
+.authwrap{display:grid;grid-template-columns:minmax(0,480px) minmax(0,1fr);gap:28px;max-width:1000px;margin:20px auto 0;align-items:start}
+.authwrap:has(.wide){grid-template-columns:minmax(0,680px);justify-content:center}
+.authcard{background:#fff;border:1px solid var(--line);border-radius:20px;padding:30px;box-shadow:var(--shadow)}
+.authcard h1{font-size:26px;letter-spacing:-.02em}
+.authcard .sub{color:var(--mut);margin:4px 0 20px}
+.authcard label,.fform label{display:block;font-size:13px;font-weight:700;margin-top:14px}
+.authcard input:not([type=checkbox]),.fform input{display:block;width:100%;margin-top:6px;border:1px solid #cfdde3;border-radius:10px;padding:11px 12px;font-size:15px;background:#fff}
+.authcard input:focus,.fform input:focus{outline:0;border-color:var(--teal);box-shadow:0 0 0 3px #5cc6d033}
+.authcard .btn{margin-top:20px;padding:12px 16px;font-size:15px;border:0}
+.authcard .alt{text-align:center;margin-top:18px;font-size:14px;color:var(--mut)}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:0 16px}
+.opt{font-weight:500;color:var(--mut)}
+.pw{display:block;position:relative}
+.pw input{padding-right:44px!important}
+.eye{position:absolute;right:6px;top:12px;border:0;background:none;font-size:16px;opacity:.55;padding:4px 8px}
+.eye:hover{opacity:1}
+.meter{display:flex;gap:4px;margin-top:7px}
+.meter i{flex:1;height:4px;border-radius:4px;background:#e3eaee}
+.meter i.on.s1{background:#c92a2a}.meter i.on.s2{background:#e8590c}.meter i.on.s3{background:#d9a400}.meter i.on.s4{background:#157a3d}
+.fe{display:block;font-style:normal;color:var(--out);font-size:12.5px;min-height:0;margin-top:4px;font-weight:500}
+.chk{display:flex!important;gap:10px;align-items:flex-start;font-weight:500!important;font-size:13.5px!important;color:var(--mut);cursor:pointer}
+.chk input{margin-top:3px!important;width:auto!important;accent-color:var(--teal)}
+.ferr{background:var(--out-bg);color:var(--out);padding:10px 13px;border-radius:10px;font-size:13.5px;margin-top:14px;font-weight:600}
+.authside{padding:30px 6px;color:var(--ink)}
+.authside h2{font-size:20px;margin-bottom:12px}
+.authside ul{list-style:none;display:flex;flex-direction:column;gap:12px}
+.authside li{background:#ffffffb0;border:1px solid var(--line);border-radius:12px;padding:12px 14px;font-size:14.5px}
+.authside .fine{font-size:12.5px;color:var(--mut);margin-top:16px}
+.demohint{margin-top:18px;background:var(--warn-bg);color:#6b4500;border-radius:12px;padding:12px 14px;font-size:13px}
+.demohint code{background:#fff8;padding:1px 6px;border-radius:5px}
+.chips2{display:flex;gap:6px;margin-top:8px;flex-wrap:wrap}
+.chips2 button{background:#fff;border:1px solid #e5c867;border-radius:999px;padding:4px 12px;font-size:12.5px;font-weight:700;color:#6b4500}
+.fform{padding:6px 18px 18px}
+.fform .btn{margin-top:14px}
+.star{position:absolute;right:12px;bottom:12px;width:34px;height:34px;border-radius:50%;border:1px solid var(--line);background:#fff;font-size:18px;color:#a5b3bb;line-height:1;display:grid;place-items:center;z-index:2}
+.star:hover{color:#e0a100;border-color:#e0a100}
+.star.on{color:#e0a100;background:#fff7dc;border-color:#f0d27a}
+.star.big{position:static;width:auto;height:auto;border-radius:999px;padding:4px 12px;font-size:13px;display:inline-flex;gap:6px;font-weight:700}
+.row .star{position:static}
+.cardw{position:relative}
+.cardw .card{height:100%;padding-bottom:20px}
+.cardw .foot{padding-right:42px}
+
+/* ---------- Inventario / reportes ---------- */
+.tools{padding:14px 18px;display:flex;gap:10px;flex-wrap:wrap;align-items:center;border-bottom:1px solid var(--line)}
+.tools .field{flex:1;min-width:220px;max-width:380px}
+.seg button small{opacity:.7;font-weight:600;margin-left:2px}
+table.inv{width:100%;border-collapse:collapse;font-size:14px}
+.inv th{position:sticky;top:0;background:#f7fafb;text-align:left;padding:10px 14px;font-size:12px;text-transform:uppercase;letter-spacing:.05em;color:var(--mut);border-bottom:1px solid var(--line);white-space:nowrap}
+.inv td{padding:10px 14px;border-bottom:1px solid #eef3f5;vertical-align:middle}
+.inv tr:hover td{background:var(--teal-xl)}
+.inv .num{text-align:right}
+.inv td small{display:block;color:var(--mut);font-size:12px}
+.inv .nm{font-weight:700;color:var(--ink)}
+.inv .nm:hover{color:var(--teal-d)}
+.inv td .bar{min-width:90px}
+.sortb{border:0;background:none;font:inherit;text-transform:inherit;letter-spacing:inherit;color:inherit;cursor:pointer;padding:0}
+.sortb.on{color:var(--teal-d)}
+.tabs{display:flex;gap:6px;margin-bottom:16px;border-bottom:1px solid var(--line)}
+.tabs button{border:0;background:none;padding:11px 16px;font-weight:700;font-size:14.5px;color:var(--mut);border-bottom:3px solid transparent;margin-bottom:-1px}
+.tabs button.on{color:var(--teal-d);border-color:var(--teal)}
+.repgrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;margin-top:16px}
+.repgrid .wide2{grid-column:1/-1}
+.pad{padding:16px 18px}
+.donut{display:flex;gap:22px;align-items:center;flex-wrap:wrap;justify-content:center}
+.donut svg{width:190px;height:190px;flex:none}
+.donut .dt{font-size:24px;font-weight:800;fill:var(--ink)}
+.donut .ds{font-size:9px;fill:var(--mut)}
+.dl{list-style:none;display:flex;flex-direction:column;gap:9px;min-width:170px;flex:1}
+.dl li{display:grid;grid-template-columns:12px 1fr auto 42px;gap:8px;align-items:center;font-size:14px}
+.dl i{width:12px;height:12px;border-radius:4px}
+.dl em{font-style:normal;color:var(--mut);font-size:12.5px;text-align:right}
+.hb{display:flex;flex-direction:column;gap:9px}
+.hbr{display:grid;grid-template-columns:minmax(90px,170px) 1fr 62px;gap:10px;align-items:center;font-size:13.5px}
+.hbl{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hbl a{color:var(--ink)}.hbl a:hover{color:var(--teal-d)}
+.hbt{height:14px;background:#edf2f4;border-radius:99px;overflow:hidden;display:flex}
+.hbt i{display:block;height:100%;border-radius:99px;transition:width .4s}
+.hbt.st i{border-radius:0}
+.hbr b{text-align:right;font-size:13px}
+.lc{width:100%;height:auto;display:block}
+.lc text{font:11px Inter,Arial,sans-serif;fill:#6b808c}
+
+@media print{
+  .top,.banner,footer,.noprint,.toast,.tools,.modal,.tabs{display:none!important}
+  body{background:#fff}main{padding:0;max-width:none}
+  .panel,.kpi,.head{box-shadow:none;break-inside:avoid}
+  .repgrid{grid-template-columns:1fr 1fr}
+  *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+}
+@media (max-width:1000px){.repgrid{grid-template-columns:1fr}.authwrap{grid-template-columns:1fr}.authside{display:none}}
+@media (max-width:700px){.two{grid-template-columns:1fr}.authcard{padding:22px}.hbr{grid-template-columns:96px 1fr 52px}.donut{justify-content:flex-start}.tools .field{max-width:none}.inv th,.inv td{padding:9px 10px}}
+</style>
 </head>
-
 <body>
-    <header>
-        <div>
-            <h1>MEDIRED</h1>
-            <p>Plataforma de gestión y trazabilidad de medicamentos</p>
-        </div>
-        <div class="estado" id="estadoCabecera">● Verificando conexión</div>
-    </header>
 
-    <div class="contenedor">
-        <aside>
-            <h3>MENÚ PRINCIPAL</h3>
-
-            <div class="grupo-menu">
-                <button class="menu activo" onclick="mostrarSeccion('inicio', this)">
-                    ◈ Panel principal
-                </button>
-                <button class="menu" onclick="cargarMedicamentos(this)">
-                    ♧ Medicamentos
-                </button>
-                <button class="menu" onclick="cargarSedes(this)">
-                    ⌖ Sedes
-                </button>
-                <button class="menu" onclick="mostrarInventario(this)">
-                    ▤ Inventario
-                </button>
-            </div>
-
-            <h3>GESTIÓN DEL SISTEMA</h3>
-
-            <div class="grupo-menu">
-                <button class="menu" onclick="mostrarSeccion('solicitudes', this)">
-                    ⇄ Solicitudes y entregas
-                </button>
-                <button class="menu" onclick="mostrarSeccion('reportes', this)">
-                    ▥ Reportes y gráficos
-                </button>
-                <button class="menu" onclick="mostrarSeccion('alertas', this)">
-                    ♧ Alertas
-                </button>
-                <button class="menu" onclick="mostrarSeccion('usuarios', this)">
-                    ♙ Usuarios
-                </button>
-            </div>
-        </aside>
-
-        <main>
-            <!-- PANEL PRINCIPAL -->
-            <section id="inicio">
-                <div class="bienvenida">
-                    <h2>Panel principal</h2>
-                    <p>Bienvenido a MEDIRED. Aquí puedes consultar el estado general del sistema.</p>
-                </div>
-
-                <div class="tarjetas">
-                    <div class="tarjeta">
-                        <div class="icono">♧</div>
-                        <p>Medicamentos registrados</p>
-                        <h3 id="totalMedicamentos">—</h3>
-                    </div>
-
-                    <div class="tarjeta">
-                        <div class="icono">⌖</div>
-                        <p>Sedes registradas</p>
-                        <h3 id="totalSedes">—</h3>
-                    </div>
-
-                    <div class="tarjeta">
-                        <div class="icono">◉</div>
-                        <p>Conexión con la API</p>
-                        <h3 id="estadoAPI" style="font-size: 21px;">Verificando...</h3>
-                    </div>
-                </div>
-
-                <div class="panel">
-                    <div class="panel-cabecera">
-                        <h3>Estado del sistema</h3>
-                        <button class="accion" onclick="verificarSistema()">Verificar conexión</button>
-                    </div>
-                    <div id="mensajeInicio" class="mensaje">
-                        Conectando con el servidor de MEDIRED...
-                    </div>
-                </div>
-
-                <div class="panel">
-                    <div class="panel-cabecera">
-                        <h3>Accesos rápidos</h3>
-                    </div>
-                    <div class="modulo-grid">
-                        <div class="modulo">
-                            <div class="icono">♧</div>
-                            <h3>Consultar medicamentos</h3>
-                            <p>Busca y revisa los medicamentos registrados en la plataforma.</p>
-                            <br>
-                            <button class="accion" onclick="cargarMedicamentos()">Ver medicamentos</button>
-                        </div>
-                        <div class="modulo">
-                            <div class="icono">▤</div>
-                            <h3>Consultar inventario</h3>
-                            <p>Consulta las existencias disponibles por identificador de medicamento.</p>
-                            <br>
-                            <button class="accion" onclick="mostrarInventario()">Ver inventario</button>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <!-- MEDICAMENTOS -->
-            <section id="medicamentos" class="oculto">
-                <div class="bienvenida">
-                    <h2>Medicamentos</h2>
-                    <p>Consulta los medicamentos registrados en la base de datos de MEDIRED.</p>
-                </div>
-
-                <div class="panel">
-                    <div class="panel-cabecera">
-                        <h3>Listado de medicamentos</h3>
-                        <button class="accion" onclick="cargarMedicamentos()">Actualizar listado</button>
-                    </div>
-
-                    <input class="buscador" id="buscarMedicamento"
-                           placeholder="Buscar en los medicamentos..."
-                           oninput="filtrarTabla('tablaMedicamentos', this.value)">
-
-                    <div id="resultadoMedicamentos" class="tabla-contenedor">
-                        <p class="mensaje">Pulsa actualizar para consultar los datos.</p>
-                    </div>
-                </div>
-            </section>
-
-            <!-- SEDES -->
-            <section id="sedes" class="oculto">
-                <div class="bienvenida">
-                    <h2>Sedes</h2>
-                    <p>Consulta las sedes registradas en MEDIRED.</p>
-                </div>
-
-                <div class="panel">
-                    <div class="panel-cabecera">
-                        <h3>Listado de sedes</h3>
-                        <button class="accion" onclick="cargarSedes()">Actualizar listado</button>
-                    </div>
-
-                    <input class="buscador" id="buscarSede"
-                           placeholder="Buscar en las sedes..."
-                           oninput="filtrarTabla('tablaSedes', this.value)">
-
-                    <div id="resultadoSedes" class="tabla-contenedor">
-                        <p class="mensaje">Pulsa actualizar para consultar los datos.</p>
-                    </div>
-                </div>
-            </section>
-
-            <!-- INVENTARIO -->
-            <section id="inventario" class="oculto">
-                <div class="bienvenida">
-                    <h2>Inventario</h2>
-                    <p>Consulta las existencias de medicamentos por identificador.</p>
-                </div>
-
-                <div class="panel">
-                    <div class="panel-cabecera">
-                        <h3>Consultar existencias</h3>
-                    </div>
-
-                    <p style="margin-bottom: 14px; color: var(--suave);">
-                        Ingresa el ID de un medicamento registrado.
-                    </p>
-
-                    <input id="idMedicamento" type="number" min="1"
-                           placeholder="Ejemplo: 1">
-
-                    <button class="accion" onclick="consultarInventario()">Consultar</button>
-
-                    <div id="resultadoInventario" class="mensaje">
-                        Ingresa un identificador para consultar el inventario.
-                    </div>
-                </div>
-            </section>
-
-            <!-- SOLICITUDES Y ENTREGAS -->
-            <section id="solicitudes" class="oculto">
-                <div class="bienvenida">
-                    <h2>Solicitudes y entregas</h2>
-                    <p>Espacio destinado a la gestión y trazabilidad de solicitudes de medicamentos.</p>
-                </div>
-
-                <div class="modulo-grid">
-                    <div class="modulo">
-                        <div class="icono">⇄</div>
-                        <h3>Solicitudes de medicamentos</h3>
-                        <p>Este módulo permitirá registrar solicitudes, consultar su estado y hacer seguimiento.</p>
-                        <span class="etiqueta">Pendiente de conectar con la API</span>
-                    </div>
-
-                    <div class="modulo">
-                        <div class="icono">▣</div>
-                        <h3>Entregas</h3>
-                        <p>Este módulo permitirá consultar las entregas y registrar su trazabilidad.</p>
-                        <span class="etiqueta">Pendiente de conectar con la API</span>
-                    </div>
-                </div>
-            </section>
-
-            <!-- REPORTES -->
-            <section id="reportes" class="oculto">
-                <div class="bienvenida">
-                    <h2>Reportes y gráficos</h2>
-                    <p>Espacio destinado al análisis de inventario, disponibilidad y movimientos.</p>
-                </div>
-
-                <div class="modulo-grid">
-                    <div class="modulo">
-                        <div class="icono">▥</div>
-                        <h3>Reporte de inventario</h3>
-                        <p>Permitirá visualizar las existencias de medicamentos por sede.</p>
-                        <span class="etiqueta">Pendiente de conectar con la API</span>
-                    </div>
-
-                    <div class="modulo">
-                        <div class="icono">▤</div>
-                        <h3>Movimientos de inventario</h3>
-                        <p>Permitirá analizar las entradas y salidas registradas en el sistema.</p>
-                        <span class="etiqueta">Pendiente de conectar con la API</span>
-                    </div>
-                </div>
-            </section>
-
-            <!-- ALERTAS -->
-            <section id="alertas" class="oculto">
-                <div class="bienvenida">
-                    <h2>Alertas</h2>
-                    <p>Espacio para futuras alertas sobre disponibilidad y niveles de inventario.</p>
-                </div>
-
-                <div class="panel">
-                    <h3>Centro de alertas</h3>
-                    <div class="mensaje">
-                        Las alertas automáticas todavía no están conectadas al backend.
-                        Cuando se implemente esa funcionalidad, aquí se podrán mostrar
-                        notificaciones de inventario bajo y otras novedades.
-                    </div>
-                </div>
-            </section>
-
-            <!-- USUARIOS -->
-            <section id="usuarios" class="oculto">
-                <div class="bienvenida">
-                    <h2>Usuarios</h2>
-                    <p>Espacio destinado a la administración de usuarios y roles de MEDIRED.</p>
-                </div>
-
-                <div class="panel">
-                    <h3>Administración de usuarios</h3>
-                    <div class="mensaje">
-                        La consulta y administración de usuarios aún no está conectada
-                        a una ruta de la API. No se modificarán los usuarios de la base de datos
-                        desde esta pantalla.
-                    </div>
-                </div>
-            </section>
-
-            <footer>MEDIRED · Sistema de gestión y trazabilidad de medicamentos</footer>
-        </main>
+<header class="top">
+  <div class="top-in">
+    <a class="brand" href="#/buscar" aria-label="MEDIRED, inicio">
+      <svg width="38" height="38" viewBox="0 0 38 38" aria-hidden="true"><rect width="38" height="38" rx="11" fill="#087f8c"/><path d="M19 9v20M9 19h20" stroke="#fff" stroke-width="4.5" stroke-linecap="round"/><circle cx="19" cy="19" r="13" fill="none" stroke="#fff" stroke-opacity=".35" stroke-width="1.5" stroke-dasharray="2 4"/></svg>
+      <div><b>MEDIRED</b><small>Disponibilidad de medicamentos</small></div>
+    </a>
+    <nav aria-label="Secciones">
+      <a href="#/buscar" data-nav="buscar">Medicamentos</a>
+      <a href="#/sedes" data-nav="sedes">Sedes</a>
+      <a href="#/inventario" data-nav="inventario">Inventario</a>
+      <a href="#/disponibilidad" data-nav="disponibilidad">Disponibilidad</a>
+      <a href="#/reportes" data-nav="reportes">Reportes</a>
+    </nav>
+    <div class="top-r">
+      <span class="chip load" id="status" role="status"><i></i><span>Conectando…</span></span>
+      <span id="auth" class="authbox"></span>
+      <button class="iconbtn" id="btnRefresh" title="Actualizar datos">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-3-6.7L21 8"/><path d="M21 3v5h-5"/></svg>
+        <span class="hide-s" id="updated">Actualizar</span>
+      </button>
     </div>
+  </div>
+</header>
+<div class="banner" id="banner"></div>
+<main id="app" tabindex="-1"></main>
+<footer>MEDIRED · Plataforma interoperable de gestión y trazabilidad de medicamentos · Piloto académico con datos sintéticos</footer>
 
-    <script>
-        /*
-         * La API se consulta en el mismo origen que sirve esta página.
-         * Abre MEDIRED desde el endpoint /pagina del backend.
-         */
-        const API_BASE = "";
+<div class="modal" id="modal" role="dialog" aria-modal="true" aria-labelledby="mTitle"><div class="dlg" id="dlg"></div></div>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
 
-        function mostrarSeccion(nombre, boton) {
-            const secciones = [
-                "inicio",
-                "medicamentos",
-                "sedes",
-                "inventario",
-                "solicitudes",
-                "reportes",
-                "alertas",
-                "usuarios"
-            ];
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+/* =====================================================================
+   MEDIRED · Frontend
+   - Consume la API FastAPI (mismo origen) y, si no está disponible,
+     cae a un modo demostración con los datos sintéticos del seed.
+   ===================================================================== */
+const DEMO = {"sedes":[{"id_sede":1,"nombre":"Sede Chapinero","localidad":"Chapinero","direccion":"Cra 13 # 45-67","telefono":"6017363900","horario":"Lunes a sábado 7:00am - 5:00pm","latitud":4.433399,"longitud":-74.027535},{"id_sede":2,"nombre":"Sede Kennedy","localidad":"Kennedy","direccion":"Cra 78 # 38-12 Sur","telefono":"6014054301","horario":"Lunes a sábado 7:00am - 5:00pm","latitud":4.466963,"longitud":-74.029059},{"id_sede":3,"nombre":"Sede Suba","localidad":"Suba","direccion":"Av. Suba # 116-45","telefono":"6017676566","horario":"Lunes a sábado 7:00am - 5:00pm","latitud":4.6222,"longitud":-74.08639},{"id_sede":4,"nombre":"Sede Engativá","localidad":"Engativá","direccion":"Cl 80 # 91-23","telefono":"6016953410","horario":"Lunes a sábado 7:00am - 5:00pm","latitud":4.526577,"longitud":-74.241061},{"id_sede":5,"nombre":"Sede Usaquén","localidad":"Usaquén","direccion":"Cra 7 # 116-30","telefono":"6013834068","horario":"Lunes a sábado 7:00am - 5:00pm","latitud":4.469798,"longitud":-74.069394},{"id_sede":6,"nombre":"Sede Bosa","localidad":"Bosa","direccion":"Cl 65 Sur # 78-12","telefono":"6016708064","horario":"Lunes a sábado 7:00am - 5:00pm","latitud":4.459651,"longitud":-74.055035},{"id_sede":7,"nombre":"Sede Fontibón","localidad":"Fontibón","direccion":"Cra 100 # 22-45","telefono":"6016571300","horario":"Lunes a sábado 7:00am - 5:00pm","latitud":4.525856,"longitud":-74.115237},{"id_sede":8,"nombre":"Sede San Cristóbal","localidad":"San Cristóbal","direccion":"Cl 27 Sur # 5-40","telefono":"6014333632","horario":"Lunes a sábado 7:00am - 5:00pm","latitud":4.642829,"longitud":-74.24805},{"id_sede":9,"nombre":"Sede Ciudad Bolívar","localidad":"Ciudad Bolívar","direccion":"Cra 18 # 70-22 Sur","telefono":"6013339319","horario":"Lunes a sábado 7:00am - 5:00pm","latitud":4.609442,"longitud":-74.147925},{"id_sede":10,"nombre":"Sede Teusaquillo","localidad":"Teusaquillo","direccion":"Cl 39 # 22-10","telefono":"6013304256","horario":"Lunes a sábado 7:00am - 5:00pm","latitud":4.464594,"longitud":-74.020952},{"id_sede":11,"nombre":"Sede Puente Aranda","localidad":"Puente Aranda","direccion":"Cra 50 # 12-30","telefono":"6012857401","horario":"Lunes a sábado 7:00am - 5:00pm","latitud":4.427824,"longitud":-74.220985},{"id_sede":12,"nombre":"Sede Rafael Uribe Uribe","localidad":"Rafael Uribe Uribe","direccion":"Cl 27 Sur # 24-15","telefono":"6014885309","horario":"Lunes a sábado 7:00am - 5:00pm","latitud":4.581118,"longitud":-74.007862}],"meds":[{"id_medicamento":1,"codigo_cum":"CUM-20000001-1","codigo_ium":"IUM-300001","nombre":"Acetaminofén","principio_activo":"Acetaminofén","forma_farmaceutica":"Tableta","concentracion":"500 mg","via_administracion":"Oral","requiere_formula":true},{"id_medicamento":2,"codigo_cum":"CUM-20000002-1","codigo_ium":"IUM-300002","nombre":"Ibuprofeno","principio_activo":"Ibuprofeno","forma_farmaceutica":"Tableta","concentracion":"400 mg","via_administracion":"Oral","requiere_formula":true},{"id_medicamento":3,"codigo_cum":"CUM-20000003-1","codigo_ium":"IUM-300003","nombre":"Losartán","principio_activo":"Losartán potásico","forma_farmaceutica":"Tableta","concentracion":"50 mg","via_administracion":"Oral","requiere_formula":true},{"id_medicamento":4,"codigo_cum":"CUM-20000004-1","codigo_ium":"IUM-300004","nombre":"Metformina","principio_activo":"Metformina clorhidrato","forma_farmaceutica":"Tableta","concentracion":"850 mg","via_administracion":"Oral","requiere_formula":true},{"id_medicamento":5,"codigo_cum":"CUM-20000005-1","codigo_ium":"IUM-300005","nombre":"Omeprazol","principio_activo":"Omeprazol","forma_farmaceutica":"Cápsula","concentracion":"20 mg","via_administracion":"Oral","requiere_formula":true},{"id_medicamento":6,"codigo_cum":"CUM-20000006-1","codigo_ium":"IUM-300006","nombre":"Amoxicilina","principio_activo":"Amoxicilina","forma_farmaceutica":"Cápsula","concentracion":"500 mg","via_administracion":"Oral","requiere_formula":true},{"id_medicamento":7,"codigo_cum":"CUM-20000007-1","codigo_ium":"IUM-300007","nombre":"Loratadina","principio_activo":"Loratadina","forma_farmaceutica":"Tableta","concentracion":"10 mg","via_administracion":"Oral","requiere_formula":true},{"id_medicamento":8,"codigo_cum":"CUM-20000008-1","codigo_ium":"IUM-300008","nombre":"Enalapril","principio_activo":"Enalapril maleato","forma_farmaceutica":"Tableta","concentracion":"20 mg","via_administracion":"Oral","requiere_formula":true},{"id_medicamento":9,"codigo_cum":"CUM-20000009-1","codigo_ium":"IUM-300009","nombre":"Salbutamol","principio_activo":"Salbutamol","forma_farmaceutica":"Inhalador","concentracion":"100 mcg/dosis","via_administracion":"Inhalada","requiere_formula":true},{"id_medicamento":10,"codigo_cum":"CUM-20000010-1","codigo_ium":"IUM-300010","nombre":"Atorvastatina","principio_activo":"Atorvastatina cálcica","forma_farmaceutica":"Tableta","concentracion":"20 mg","via_administracion":"Oral","requiere_formula":true},{"id_medicamento":11,"codigo_cum":"CUM-20000011-1","codigo_ium":"IUM-300011","nombre":"Levotiroxina","principio_activo":"Levotiroxina sódica","forma_farmaceutica":"Tableta","concentracion":"50 mcg","via_administracion":"Oral","requiere_formula":true},{"id_medicamento":12,"codigo_cum":"CUM-20000012-1","codigo_ium":"IUM-300012","nombre":"Insulina NPH","principio_activo":"Insulina humana NPH","forma_farmaceutica":"Vial","concentracion":"100 UI/ml","via_administracion":"Subcutánea","requiere_formula":true},{"id_medicamento":13,"codigo_cum":"CUM-20000013-1","codigo_ium":"IUM-300013","nombre":"Diclofenaco","principio_activo":"Diclofenaco sódico","forma_farmaceutica":"Tableta","concentracion":"50 mg","via_administracion":"Oral","requiere_formula":true},{"id_medicamento":14,"codigo_cum":"CUM-20000014-1","codigo_ium":"IUM-300014","nombre":"Furosemida","principio_activo":"Furosemida","forma_farmaceutica":"Tableta","concentracion":"40 mg","via_administracion":"Oral","requiere_formula":true},{"id_medicamento":15,"codigo_cum":"CUM-20000015-1","codigo_ium":"IUM-300015","nombre":"Metronidazol","principio_activo":"Metronidazol","forma_farmaceutica":"Tableta","concentracion":"500 mg","via_administracion":"Oral","requiere_formula":true},{"id_medicamento":16,"codigo_cum":"CUM-20000016-1","codigo_ium":"IUM-300016","nombre":"Prednisolona","principio_activo":"Prednisolona","forma_farmaceutica":"Tableta","concentracion":"5 mg","via_administracion":"Oral","requiere_formula":true},{"id_medicamento":17,"codigo_cum":"CUM-20000017-1","codigo_ium":"IUM-300017","nombre":"Clonazepam","principio_activo":"Clonazepam","forma_farmaceutica":"Tableta","concentracion":"2 mg","via_administracion":"Oral","requiere_formula":true},{"id_medicamento":18,"codigo_cum":"CUM-20000018-1","codigo_ium":"IUM-300018","nombre":"Ácido fólico","principio_activo":"Ácido fólico","forma_farmaceutica":"Tableta","concentracion":"1 mg","via_administracion":"Oral","requiere_formula":true},{"id_medicamento":19,"codigo_cum":"CUM-20000019-1","codigo_ium":"IUM-300019","nombre":"Warfarina","principio_activo":"Warfarina sódica","forma_farmaceutica":"Tableta","concentracion":"5 mg","via_administracion":"Oral","requiere_formula":true},{"id_medicamento":20,"codigo_cum":"CUM-20000020-1","codigo_ium":"IUM-300020","nombre":"Azitromicina","principio_activo":"Azitromicina","forma_farmaceutica":"Tableta","concentracion":"500 mg","via_administracion":"Oral","requiere_formula":true}],"inv":[[1,1,1,60,20,"2026-09-21 20:30:00"],[2,1,2,148,50,"2026-09-21 20:30:00"],[3,1,4,169,50,"2026-09-21 20:30:00"],[4,1,5,163,80,"2026-09-21 20:30:00"],[5,1,6,399,50,"2026-09-21 20:30:00"],[6,1,7,18,30,"2026-09-21 20:30:00"],[7,1,8,196,30,"2026-09-21 20:30:00"],[8,1,9,46,30,"2026-09-21 20:30:00"],[9,1,10,310,20,"2026-09-21 20:30:00"],[10,1,11,51,80,"2026-09-21 20:30:00"],[11,2,1,349,50,"2026-09-21 20:30:00"],[12,2,2,120,50,"2026-09-21 20:30:00"],[13,2,6,112,80,"2026-09-21 20:30:00"],[14,2,7,208,80,"2026-09-21 20:30:00"],[15,2,8,369,20,"2026-09-21 20:30:00"],[16,2,9,200,50,"2026-09-21 20:30:00"],[17,2,10,141,50,"2026-09-21 20:30:00"],[18,2,12,221,30,"2026-09-21 20:30:00"],[19,3,1,0,20,"2026-09-21 20:30:00"],[20,3,2,16,50,"2026-09-21 20:30:00"],[21,3,3,394,20,"2026-09-21 20:30:00"],[22,3,5,367,30,"2026-09-21 20:30:00"],[23,3,6,360,50,"2026-09-21 20:30:00"],[24,3,7,189,30,"2026-09-21 20:30:00"],[25,3,8,314,50,"2026-09-21 20:30:00"],[26,3,9,30,20,"2026-09-21 20:30:00"],[27,3,10,66,30,"2026-09-21 20:30:00"],[28,4,2,372,30,"2026-09-21 20:30:00"],[29,4,3,322,80,"2026-09-21 20:30:00"],[30,4,4,201,20,"2026-09-21 20:30:00"],[31,4,5,51,20,"2026-09-21 20:30:00"],[32,4,6,8,20,"2026-09-21 20:30:00"],[33,4,7,222,80,"2026-09-21 20:30:00"],[34,4,8,15,20,"2026-09-21 20:30:00"],[35,4,9,3,20,"2026-09-21 20:30:00"],[36,4,10,235,30,"2026-09-21 20:30:00"],[37,4,11,155,20,"2026-09-21 20:30:00"],[38,4,12,334,50,"2026-09-21 20:30:00"],[39,5,1,141,30,"2026-09-21 20:30:00"],[40,5,2,0,20,"2026-09-21 20:30:00"],[41,5,3,2,30,"2026-09-21 20:30:00"],[42,5,4,8,20,"2026-09-21 20:30:00"],[43,5,5,0,30,"2026-09-21 20:30:00"],[44,5,7,154,50,"2026-09-21 20:30:00"],[45,5,8,117,50,"2026-09-21 20:30:00"],[46,5,9,0,50,"2026-09-21 20:30:00"],[47,5,10,3,20,"2026-09-21 20:30:00"],[48,5,11,175,50,"2026-09-21 20:30:00"],[49,5,12,384,50,"2026-09-21 20:30:00"],[50,6,1,103,50,"2026-09-21 20:30:00"],[51,6,5,19,50,"2026-09-21 20:30:00"],[52,6,6,300,50,"2026-09-21 20:30:00"],[53,6,7,344,20,"2026-09-21 20:30:00"],[54,6,8,86,20,"2026-09-21 20:30:00"],[55,6,9,298,80,"2026-09-21 20:30:00"],[56,6,11,48,30,"2026-09-21 20:30:00"],[57,6,12,0,30,"2026-09-21 20:30:00"],[58,7,1,127,20,"2026-09-21 20:30:00"],[59,7,2,258,50,"2026-09-21 20:30:00"],[60,7,3,113,30,"2026-09-21 20:30:00"],[61,7,4,171,80,"2026-09-21 20:30:00"],[62,7,5,32,80,"2026-09-21 20:30:00"],[63,7,6,5,80,"2026-09-21 20:30:00"],[64,7,7,236,80,"2026-09-21 20:30:00"],[65,7,8,1,30,"2026-09-21 20:30:00"],[66,7,9,199,20,"2026-09-21 20:30:00"],[67,7,10,109,50,"2026-09-21 20:30:00"],[68,7,11,105,50,"2026-09-21 20:30:00"],[69,7,12,360,50,"2026-09-21 20:30:00"],[70,8,2,52,30,"2026-09-21 20:30:00"],[71,8,4,0,30,"2026-09-21 20:30:00"],[72,8,5,210,50,"2026-09-21 20:30:00"],[73,8,7,259,50,"2026-09-21 20:30:00"],[74,8,8,245,30,"2026-09-21 20:30:00"],[75,8,9,321,30,"2026-09-21 20:30:00"],[76,8,10,10,20,"2026-09-21 20:30:00"],[77,8,11,276,50,"2026-09-21 20:30:00"],[78,8,12,123,80,"2026-09-21 20:30:00"],[79,9,1,170,50,"2026-09-21 20:30:00"],[80,9,2,0,30,"2026-09-21 20:30:00"],[81,9,3,232,20,"2026-09-21 20:30:00"],[82,9,4,64,80,"2026-09-21 20:30:00"],[83,9,5,4,20,"2026-09-21 20:30:00"],[84,9,6,7,80,"2026-09-21 20:30:00"],[85,9,7,317,80,"2026-09-21 20:30:00"],[86,9,8,276,50,"2026-09-21 20:30:00"],[87,9,9,308,80,"2026-09-21 20:30:00"],[88,9,10,212,80,"2026-09-21 20:30:00"],[89,9,11,298,50,"2026-09-21 20:30:00"],[90,9,12,140,20,"2026-09-21 20:30:00"],[91,10,1,5,20,"2026-09-21 20:30:00"],[92,10,2,242,30,"2026-09-21 20:30:00"],[93,10,3,185,80,"2026-09-21 20:30:00"],[94,10,4,214,20,"2026-09-21 20:30:00"],[95,10,5,249,50,"2026-09-21 20:30:00"],[96,10,6,359,80,"2026-09-21 20:30:00"],[97,10,7,219,80,"2026-09-21 20:30:00"],[98,10,9,319,80,"2026-09-21 20:30:00"],[99,10,10,323,20,"2026-09-21 20:30:00"],[100,10,12,28,30,"2026-09-21 20:30:00"],[101,11,1,282,50,"2026-09-21 20:30:00"],[102,11,2,295,80,"2026-09-21 20:30:00"],[103,11,5,0,50,"2026-09-21 20:30:00"],[104,11,6,1,20,"2026-09-21 20:30:00"],[105,11,8,16,30,"2026-09-21 20:30:00"],[106,11,9,33,80,"2026-09-21 20:30:00"],[107,11,10,6,20,"2026-09-21 20:30:00"],[108,11,12,0,80,"2026-09-21 20:30:00"],[109,12,1,386,30,"2026-09-21 20:30:00"],[110,12,2,41,20,"2026-09-21 20:30:00"],[111,12,3,309,50,"2026-09-21 20:30:00"],[112,12,5,301,80,"2026-09-21 20:30:00"],[113,12,6,20,80,"2026-09-21 20:30:00"],[114,12,7,325,50,"2026-09-21 20:30:00"],[115,12,8,175,50,"2026-09-21 20:30:00"],[116,12,10,267,30,"2026-09-21 20:30:00"],[117,12,11,303,50,"2026-09-21 20:30:00"],[118,12,12,162,30,"2026-09-21 20:30:00"],[119,13,1,55,50,"2026-09-21 20:30:00"],[120,13,2,238,30,"2026-09-21 20:30:00"],[121,13,3,309,80,"2026-09-21 20:30:00"],[122,13,5,369,30,"2026-09-21 20:30:00"],[123,13,6,331,50,"2026-09-21 20:30:00"],[124,13,7,20,50,"2026-09-21 20:30:00"],[125,13,8,324,50,"2026-09-21 20:30:00"],[126,13,9,277,30,"2026-09-21 20:30:00"],[127,13,10,149,50,"2026-09-21 20:30:00"],[128,13,11,1,50,"2026-09-21 20:30:00"],[129,14,2,21,30,"2026-09-21 20:30:00"],[130,14,4,57,80,"2026-09-21 20:30:00"],[131,14,6,113,80,"2026-09-21 20:30:00"],[132,14,8,96,20,"2026-09-21 20:30:00"],[133,14,9,80,20,"2026-09-21 20:30:00"],[134,14,10,297,30,"2026-09-21 20:30:00"],[135,14,11,269,50,"2026-09-21 20:30:00"],[136,14,12,7,20,"2026-09-21 20:30:00"],[137,15,1,118,30,"2026-09-21 20:30:00"],[138,15,2,384,80,"2026-09-21 20:30:00"],[139,15,4,0,50,"2026-09-21 20:30:00"],[140,15,5,351,50,"2026-09-21 20:30:00"],[141,15,6,15,80,"2026-09-21 20:30:00"],[142,15,8,3,30,"2026-09-21 20:30:00"],[143,15,9,113,50,"2026-09-21 20:30:00"],[144,15,10,336,80,"2026-09-21 20:30:00"],[145,15,11,396,20,"2026-09-21 20:30:00"],[146,15,12,365,20,"2026-09-21 20:30:00"],[147,16,1,0,20,"2026-09-21 20:30:00"],[148,16,2,306,80,"2026-09-21 20:30:00"],[149,16,3,126,80,"2026-09-21 20:30:00"],[150,16,4,103,50,"2026-09-21 20:30:00"],[151,16,5,285,80,"2026-09-21 20:30:00"],[152,16,6,241,80,"2026-09-21 20:30:00"],[153,16,8,256,20,"2026-09-21 20:30:00"],[154,16,9,305,50,"2026-09-21 20:30:00"],[155,16,10,9,30,"2026-09-21 20:30:00"],[156,16,11,94,80,"2026-09-21 20:30:00"],[157,16,12,111,30,"2026-09-21 20:30:00"],[158,17,2,88,30,"2026-09-21 20:30:00"],[159,17,4,340,80,"2026-09-21 20:30:00"],[160,17,5,204,80,"2026-09-21 20:30:00"],[161,17,7,65,30,"2026-09-21 20:30:00"],[162,17,8,339,80,"2026-09-21 20:30:00"],[163,17,10,308,80,"2026-09-21 20:30:00"],[164,17,11,244,80,"2026-09-21 20:30:00"],[165,17,12,19,30,"2026-09-21 20:30:00"],[166,18,1,262,20,"2026-09-21 20:30:00"],[167,18,2,333,80,"2026-09-21 20:30:00"],[168,18,4,7,50,"2026-09-21 20:30:00"],[169,18,5,229,20,"2026-09-21 20:30:00"],[170,18,6,155,20,"2026-09-21 20:30:00"],[171,18,7,365,20,"2026-09-21 20:30:00"],[172,18,8,299,50,"2026-09-21 20:30:00"],[173,18,11,96,50,"2026-09-21 20:30:00"],[174,19,1,105,20,"2026-09-21 20:30:00"],[175,19,2,48,20,"2026-09-21 20:30:00"],[176,19,3,301,30,"2026-09-21 20:30:00"],[177,19,4,0,30,"2026-09-21 20:30:00"],[178,19,5,16,30,"2026-09-21 20:30:00"],[179,19,6,180,50,"2026-09-21 20:30:00"],[180,19,7,37,80,"2026-09-21 20:30:00"],[181,19,8,203,50,"2026-09-21 20:30:00"],[182,19,9,30,50,"2026-09-21 20:30:00"],[183,19,10,201,80,"2026-09-21 20:30:00"],[184,19,11,0,50,"2026-09-21 20:30:00"],[185,19,12,84,80,"2026-09-21 20:30:00"],[186,20,1,166,20,"2026-09-21 20:30:00"],[187,20,2,15,50,"2026-09-21 20:30:00"],[188,20,3,79,30,"2026-09-21 20:30:00"],[189,20,4,67,50,"2026-09-21 20:30:00"],[190,20,5,187,20,"2026-09-21 20:30:00"],[191,20,6,306,30,"2026-09-21 20:30:00"],[192,20,7,181,50,"2026-09-21 20:30:00"],[193,20,8,223,50,"2026-09-21 20:30:00"],[194,20,9,135,20,"2026-09-21 20:30:00"],[195,20,10,72,80,"2026-09-21 20:30:00"],[196,20,11,113,50,"2026-09-21 20:30:00"],[197,20,12,245,50,"2026-09-21 20:30:00"]]};
 
-            for (let i = 0; i < secciones.length; i++) {
-                const seccion = document.getElementById(secciones[i]);
-                if (seccion) {
-                    seccion.classList.add("oculto");
-                }
-            }
+/* Ubicación aproximada del centro de cada localidad de Bogotá.
+   Se usa para el mapa porque las coordenadas del seed son sintéticas y no
+   corresponden a la ciudad. Si la localidad no está aquí, se usa latitud/longitud de la BD. */
+const CENTROS = {
+  'usaquen':[4.7110,-74.0305],'chapinero':[4.6530,-74.0560],'suba':[4.7420,-74.0840],
+  'engativa':[4.7030,-74.1120],'fontibon':[4.6740,-74.1430],'teusaquillo':[4.6370,-74.0880],
+  'puente aranda':[4.6150,-74.1100],'kennedy':[4.6280,-74.1530],'bosa':[4.6040,-74.1900],
+  'rafael uribe uribe':[4.5700,-74.1120],'san cristobal':[4.5650,-74.0850],'ciudad bolivar':[4.5450,-74.1500],
+  'santa fe':[4.6000,-74.0650],'barrios unidos':[4.6700,-74.0750],'los martires':[4.6080,-74.0900],
+  'antonio narino':[4.5900,-74.1000],'tunjuelito':[4.5800,-74.1300],'candelaria':[4.5960,-74.0730],
+  'usme':[4.4750,-74.1200],'sumapaz':[4.0000,-74.2000]
+};
 
-            const seleccionada = document.getElementById(nombre);
-            if (seleccionada) {
-                seleccionada.classList.remove("oculto");
-            }
+const API = (() => {
+  const q = new URLSearchParams(location.search).get('api');
+  if (q) return q.replace(/\/$/, '');
+  return location.protocol.startsWith('http') ? '' : 'http://localhost:8000';
+})();
 
-            const botones = document.querySelectorAll(".menu");
-            for (let i = 0; i < botones.length; i++) {
-                botones[i].classList.remove("activo");
-            }
+/* ---------- utilidades ---------- */
+const $ = (s, r = document) => r.querySelector(s);
+const $$ = (s, r = document) => [...r.querySelectorAll(s)];
+const esc = v => String(v ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const norm = s => String(s || '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().trim();
+const nf = new Intl.NumberFormat('es-CO');
+const fmt = n => nf.format(n);
+const short = n => String(n).replace(/^Sede\s+/i, '');
+const plural = (n, a, b) => n === 1 ? a : b;
 
-            if (boton) {
-                boton.classList.add("activo");
-            } else {
-                for (let i = 0; i < botones.length; i++) {
-                    const accion = botones[i].getAttribute("onclick") || "";
-                    if (accion.includes("'" + nombre + "'")) {
-                        botones[i].classList.add("activo");
-                    }
-                }
-            }
-        }
+const EST = {
+  disponible:    { label: 'Disponible', cls: 'ok',   rank: 3 },
+  bajo:          { label: 'Stock bajo', cls: 'warn', rank: 2 },
+  critico:       { label: 'Crítico',    cls: 'crit', rank: 1 },
+  no_disponible: { label: 'Agotado',    cls: 'out',  rank: 0 },
+  sin_registro:  { label: 'Sin registro', cls: 'none', rank: -1 }
+};
+const estadoOf = (q, min) => q === 0 ? 'no_disponible' : q < min ? 'critico' : q < min * 2 ? 'bajo' : 'disponible';
+const pill = e => `<span class="pill ${EST[e].cls}">${EST[e].label}</span>`;
 
-        async function pedirDatos(url) {
-            const respuesta = await fetch(API_BASE + url);
+/* ---------- estado global ---------- */
+const S = {
+  meds: [], sedes: [], inv: [], demo: false, loading: true, loadedAt: null, partial: false,
+  user: null, token: null, sessionDemo: false, next: null, favs: [], movs: [], demoMovs: null,
+  rep: { tab: 'inv', dias: 30, sede: '', data: null, rows: null, loading: false, err: null },
+  fi: { q: '', sede: '', est: 'all', sort: 'med', dir: 1, n: 60 },
+  f: { q: '', loc: '', stock: 'all', rx: 'all', sort: 'nombre' },
+  fs: { q: '', loc: '' },
+  fd: { q: '', est: 'all' },
+  fm: { q: '', est: 'all' },
+  map: null, markers: {}, route: ''
+};
 
-            if (!respuesta.ok) {
-                throw new Error(
-                    "El servidor respondió con código " + respuesta.status
-                );
-            }
+function index() {
+  S.medById = new Map(S.meds.map(m => [m.id_medicamento, m]));
+  S.sedeById = new Map(S.sedes.map(s => [s.id_sede, s]));
+  S.byMed = new Map(); S.bySede = new Map(); S.cell = new Map(); S.invById = new Map();
+  for (const r of S.inv) {
+    (S.byMed.get(r.id_medicamento) || S.byMed.set(r.id_medicamento, []).get(r.id_medicamento)).push(r);
+    (S.bySede.get(r.id_sede) || S.bySede.set(r.id_sede, []).get(r.id_sede)).push(r);
+    S.cell.set(r.id_medicamento + '|' + r.id_sede, r);
+    S.invById.set(r.id_inventario, r);
+  }
+  S.localidades = [...new Set(S.sedes.map(s => s.localidad))].sort((a, b) => a.localeCompare(b, 'es'));
+}
 
-            return await respuesta.json();
-        }
+/* ---------- API ---------- */
+async function api(path, opts = {}) {
+  const ctl = new AbortController();
+  const t = setTimeout(() => ctl.abort(), 9000);
+  try {
+    const headers = { ...(opts.headers || {}) };
+    if (S.token && !S.demo) headers.Authorization = 'Bearer ' + S.token;
+    const r = await fetch(API + path, { ...opts, headers, signal: ctl.signal });
+    if (!r.ok) {
+      let d = ''; try { d = (await r.json()).detail; } catch (e) {}
+      if (Array.isArray(d)) d = d.map(x => String(x.msg || '').replace(/^Value error, /, '')).join(' · ');
+      const err = new Error(typeof d === 'string' && d ? d : 'El servidor respondió ' + r.status);
+      err.status = r.status;
+      if (r.status === 401 && S.token && path !== '/api/auth/login') setTimeout(() => logout('Tu sesión expiró. Ingresa de nuevo.'), 0);
+      throw err;
+    }
+    if (r.status === 204) return null;
+    return await r.json();
+  } finally { clearTimeout(t); }
+}
 
-        function obtenerLista(datos) {
-            if (Array.isArray(datos)) return datos;
-            if (datos && Array.isArray(datos.items)) return datos.items;
-            if (datos && Array.isArray(datos.resultados)) return datos.resultados;
-            if (datos && Array.isArray(datos.data)) return datos.data;
-            return [];
-        }
+function loadDemo() {
+  S.demo = true;
+  S.meds = DEMO.meds.map(m => ({ ...m, activo: true }));
+  S.sedes = DEMO.sedes.map(s => ({ ...s, activo: true }));
+  S.inv = DEMO.inv.map(([id_inventario, id_medicamento, id_sede, qty, min, fecha]) =>
+    ({ id_inventario, id_medicamento, id_sede, qty, min, estado: estadoOf(qty, min), fecha: fecha.replace(' ', 'T') }));
+}
 
-        async function verificarSistema() {
-            const estado = document.getElementById("estadoAPI");
-            const cabecera = document.getElementById("estadoCabecera");
-            const mensaje = document.getElementById("mensajeInicio");
+async function loadAll(silent = false) {
+  if (!silent) { S.loading = true; setStatus('load', 'Conectando…'); render(); }
+  $('#btnRefresh').classList.add('spin');
+  try {
+    let meds = await api('/api/medicamentos?limit=200');
+    for (let off = 200; Array.isArray(meds) && meds.length === off && off < 2000; off += 200) meds = meds.concat(await api('/api/medicamentos?limit=200&offset=' + off));
+    const sedes = await api('/api/sedes');
+    if (!Array.isArray(meds) || !Array.isArray(sedes)) throw new Error('Respuesta inesperada');
+    meds.forEach(m => fixObj(m, ['nombre', 'principio_activo', 'forma_farmaceutica', 'concentracion', 'via_administracion']));
+    sedes.forEach(s => fixObj(s, ['nombre', 'localidad', 'direccion', 'horario']));
+    const inv = []; let fails = 0;
+    const toRow = (r, id) => ({ id_inventario: r.id_inventario, id_medicamento: id, id_sede: r.id_sede, qty: r.cantidad_disponible, min: r.stock_minimo, estado: r.estado, fecha: r.fecha_actualizacion });
+    try {
+      /* ruta rápida: todo el inventario en una sola consulta */
+      const all = await api('/api/inventario');
+      if (!Array.isArray(all)) throw new Error('formato');
+      for (const r of all) inv.push(toRow(r, r.id_medicamento));
+    } catch (e) {
+      /* respaldo para versiones antiguas del backend: una consulta por medicamento */
+      for (let i = 0; i < meds.length; i += 10) {
+        await Promise.all(meds.slice(i, i + 10).map(async m => {
+          try { for (const r of await api('/api/inventario/' + m.id_medicamento)) inv.push(toRow(r, m.id_medicamento)); } catch (x) { fails++; }
+        }));
+      }
+    }
+    S.meds = meds; S.sedes = sedes; S.inv = inv; S.demo = false; S.partial = fails > 0;
+  } catch (e) {
+    if (!S.meds.length || S.demo) loadDemo();
+    else { toast('No se pudo actualizar; se muestran los últimos datos', true); }
+  }
+  S.loading = false; S.loadedAt = new Date();
+  index();
+  await validateSession();
+  setStatus(S.demo ? 'demo' : 'live', S.demo ? 'Demostración' : 'En vivo');
+  $('#status').title = S.demo ? 'Sin conexión con la API: datos de demostración' : 'Conectado a la API de MEDIRED';
+  $('#btnRefresh').title = 'Actualizar datos · última carga ' + S.loadedAt.toLocaleTimeString('es-CO', { hour: '2-digit', minute: '2-digit' });
+  $('#btnRefresh').classList.remove('spin');
+  renderBanner();
+  render(silent);
+}
 
-            estado.textContent = "Verificando...";
+function setStatus(cls, txt) {
+  const el = $('#status'); el.className = 'chip ' + cls; el.lastElementChild.textContent = txt;
+}
+function renderBanner() {
+  const b = $('#banner');
+  if (S.demo) b.innerHTML = `<div><span>⚠️ <b>No se pudo conectar con la API de MEDIRED.</b> Estás viendo datos de demostración (los mismos del seed sintético). Los movimientos que registres no se guardan.</span><button id="retry">Reintentar conexión</button></div>`;
+  else if (S.partial) b.innerHTML = `<div><span>⚠️ Algunos medicamentos no pudieron consultarse; la disponibilidad puede estar incompleta.</span><button id="retry">Reintentar</button></div>`;
+  else b.innerHTML = '';
+  const r = $('#retry'); if (r) r.onclick = () => loadAll();
+}
 
-            try {
-                const datos = await pedirDatos("/");
+/* ---------- lógica de negocio ---------- */
+function sedesFiltradas(loc) { return loc ? S.sedes.filter(s => s.localidad === loc) : S.sedes; }
 
-                estado.textContent = "Conectada";
-                cabecera.textContent = "● API conectada";
-                mensaje.className = "mensaje exito";
-                mensaje.textContent =
-                    "Servidor conectado correctamente. Servicio: " +
-                    (datos.servicio || "MEDIRED API") +
-                    ". Versión: " + (datos.version || "No especificada") + ".";
+function resumen(m, loc = '') {
+  const ids = new Set(sedesFiltradas(loc).map(s => s.id_sede));
+  const rows = (S.byMed.get(m.id_medicamento) || []).filter(r => ids.has(r.id_sede));
+  const con = rows.filter(r => r.qty > 0);
+  let best = 'sin_registro';
+  for (const r of rows) if (EST[r.estado].rank > (EST[best]?.rank ?? -2)) best = r.estado;
+  return { rows, con: con.length, total: rows.reduce((a, r) => a + r.qty, 0), sedes: ids.size, best };
+}
 
-                await cargarResumen();
-            } catch (error) {
-                estado.textContent = "Sin conexión";
-                cabecera.textContent = "● Sin conexión";
-                mensaje.className = "mensaje error";
-                mensaje.textContent =
-                    "No fue posible conectar con la API. Comprueba que el servidor esté encendido y abre esta página desde el backend. Detalle: " +
-                    error.message;
-            }
-        }
+function abiertoAhora(h) {
+  const t = String(h || '');
+  const m = t.match(/(\d{1,2})(?::(\d{2}))?\s*(am|pm)\s*[-–a]+\s*(\d{1,2})(?::(\d{2}))?\s*(am|pm)/i);
+  if (!m) return null;
+  const to24 = (hh, mm, ap) => { hh = +hh % 12; if (/pm/i.test(ap)) hh += 12; return hh * 60 + (+mm || 0); };
+  const a = to24(m[1], m[2], m[3]), b = to24(m[4], m[5], m[6]);
+  let d1 = 0, d2 = 6;
+  if (/lunes a s[aá]bado/i.test(t)) { d1 = 1; d2 = 6; }
+  else if (/lunes a viernes/i.test(t)) { d1 = 1; d2 = 5; }
+  else if (/lunes a domingo|todos los d[ií]as/i.test(t)) { d1 = 0; d2 = 6; }
+  else return null;
+  const parts = new Intl.DateTimeFormat('en-US', { timeZone: 'America/Bogota', weekday: 'short', hour: 'numeric', minute: 'numeric', hour12: false }).formatToParts(new Date());
+  const g = k => parts.find(p => p.type === k).value;
+  const day = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'].indexOf(g('weekday'));
+  const mins = (+g('hour') % 24) * 60 + +g('minute');
+  return day >= d1 && day <= d2 && mins >= a && mins < b;
+}
+const openBadge = h => { const o = abiertoAhora(h); return o === null ? '' : `<span class="open ${o ? 'y' : 'n'}">${o ? 'Abierto ahora' : 'Cerrado ahora'}</span>`; };
 
-        async function cargarResumen() {
-            try {
-                const datos = await pedirDatos("/api/medicamentos");
-                document.getElementById("totalMedicamentos").textContent =
-                    obtenerLista(datos).length;
-            } catch (error) {
-                document.getElementById("totalMedicamentos").textContent = "—";
-            }
+const mapsLink = s => 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(`${s.nombre} EPS, ${s.direccion}, ${s.localidad}, Bogotá, Colombia`);
+const dateShort = iso => { try { return new Date(iso).toLocaleDateString('es-CO', { day: 'numeric', month: 'short' }); } catch (e) { return ''; } };
+const dateTime = iso => { try { return new Date(iso).toLocaleString('es-CO', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }); } catch (e) { return ''; } };
 
-            try {
-                const datos = await pedirDatos("/api/sedes");
-                document.getElementById("totalSedes").textContent =
-                    obtenerLista(datos).length;
-            } catch (error) {
-                document.getElementById("totalSedes").textContent = "—";
-            }
-        }
+function bar(r) {
+  const max = Math.max(r.min * 3, r.qty, 1);
+  const pct = Math.min(100, r.qty / max * 100), mk = Math.min(100, r.min / max * 100);
+  return `<div class="bar ${EST[r.estado].cls}" title="Mínimo recomendado: ${r.min}"><i style="width:${pct}%"></i><u style="left:${mk}%"></u></div>`;
+}
 
-        function escaparHTML(texto) {
-            return String(texto).replace(/[&<>"']/g, function (caracter) {
-                const equivalencias = {
-                    "&": "&amp;",
-                    "<": "&lt;",
-                    ">": "&gt;",
-                    '"': "&quot;",
-                    "'": "&#039;"
-                };
+/* ---------- mapa ---------- */
+function posOf(s) { return CENTROS[norm(s.localidad)] || (s.latitud != null ? [s.latitud, s.longitud] : null); }
+function destroyMap() { if (S.map) { try { S.map.remove(); } catch (e) {} S.map = null; } S.markers = {}; }
 
-                return equivalencias[caracter];
-            });
-        }
+/* items: [{ s: sede, cls: 'ok'|..., txt: 'ícono', tip: 'html' }] */
+function drawMap(el, items, onClick) {
+  const pts = items.map(i => ({ ...i, pos: posOf(i.s) })).filter(i => i.pos);
+  if (!pts.length) { el.innerHTML = '<p class="note">Sin coordenadas para mostrar.</p>'; return; }
+  if (window.L) {
+    try {
+      const map = L.map(el, { scrollWheelZoom: false, zoomControl: true }).setView([4.65, -74.1], 11);
+      L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 18, attribution: '© OpenStreetMap' }).addTo(map);
+      for (const p of pts) {
+        const icon = L.divIcon({ className: 'pinwrap', html: `<span class="pin ${p.cls}"><b>${esc(p.txt)}</b></span>`, iconSize: [30, 30], iconAnchor: [15, 28] });
+        const mk = L.marker(p.pos, { icon, title: p.s.nombre, keyboard: true }).addTo(map);
+        mk.bindTooltip(p.tip, { direction: 'top', offset: [0, -26] });
+        mk.on('click', () => onClick(p.s.id_sede));
+        S.markers[p.s.id_sede] = mk;
+      }
+      map.fitBounds(L.latLngBounds(pts.map(p => p.pos)), { padding: [40, 40], maxZoom: 13 });
+      S.map = map;
+      el.insertAdjacentHTML('beforeend', '<div class="maphint">Clic en un marcador para ver la sede</div>');
+      setTimeout(() => map.invalidateSize(), 60);
+      return;
+    } catch (e) { destroyMap(); }
+  }
+  /* respaldo sin internet: mapa esquemático SVG */
+  const la = pts.map(p => p.pos[0]), lo = pts.map(p => p.pos[1]);
+  const [a0, a1, o0, o1] = [Math.min(...la), Math.max(...la), Math.min(...lo), Math.max(...lo)];
+  const W = 400, H = 340, pad = 46;
+  const X = o => pad + (o1 === o0 ? .5 : (o - o0) / (o1 - o0)) * (W - 2 * pad);
+  const Y = a => H - pad - (a1 === a0 ? .5 : (a - a0) / (a1 - a0)) * (H - 2 * pad);
+  const colors = { ok: '#157a3d', warn: '#b7791f', crit: '#c2410c', out: '#b42318', none: '#8696a0' };
+  el.innerHTML = `<svg class="svgmap" viewBox="0 0 ${W} ${H}" role="img" aria-label="Mapa esquemático de sedes">
+    <text x="${W - 12}" y="18" text-anchor="end" style="fill:#7d909a;font-size:10px">↑ Norte · mapa esquemático (sin conexión)</text>
+    ${pts.map(p => `<g data-id="${p.s.id_sede}" tabindex="0"><title>${esc(p.s.nombre)}</title>
+      <circle cx="${X(p.pos[1])}" cy="${Y(p.pos[0])}" r="14" fill="${colors[p.cls] || colors.none}" stroke="#fff" stroke-width="2.5"/>
+      <text x="${X(p.pos[1])}" y="${Y(p.pos[0]) + 3.5}" text-anchor="middle">${esc(p.txt)}</text>
+      <text class="lb" x="${X(p.pos[1])}" y="${Y(p.pos[0]) + 27}" text-anchor="middle">${esc(short(p.s.nombre))}</text></g>`).join('')}</svg>`;
+  $$('g[data-id]', el).forEach(g => { g.onclick = () => onClick(+g.dataset.id); g.onkeydown = e => { if (e.key === 'Enter') onClick(+g.dataset.id); }; });
+}
+const goSede = id => { location.hash = '#/sede/' + id; };
+const legend = `<div class="legend"><span class="ok"><i></i>Disponible</span><span class="warn"><i></i>Stock bajo</span><span class="crit"><i></i>Crítico</span><span class="out"><i></i>Agotado</span><span class="none"><i></i>Sin registro</span></div>`;
 
-        function mostrarTabla(contenedor, tablaId, datos) {
-            const elemento = document.getElementById(contenedor);
-            const lista = obtenerLista(datos);
+/* ---------- vistas ---------- */
+const app = $('#app');
 
-            if (lista.length === 0) {
-                elemento.innerHTML =
-                    '<p class="mensaje">No hay registros para mostrar o la respuesta tiene otro formato.</p>';
-                return;
-            }
+function skeleton() {
+  app.innerHTML = `<div class="hero"><h1>Cargando disponibilidad…</h1><p>Consultando sedes y existencias.</p></div>
+  <div class="grid" style="margin-top:22px">${'<div class="skel"></div>'.repeat(6)}</div>`;
+}
 
-            const columnas = Object.keys(lista[0]);
-            let html = '<table id="' + tablaId + '"><thead><tr>';
+/* ===== Buscar medicamentos ===== */
+function viewBuscar() {
+  const f = S.f;
+  const rows = S.inv, bajos = rows.filter(r => r.estado === 'bajo' || r.estado === 'critico').length, agot = rows.filter(r => r.estado === 'no_disponible').length;
+  const pop = [...S.meds].map(m => ({ m, n: resumen(m).con })).sort((a, b) => b.n - a.n).slice(0, 6).map(x => x.m);
+  app.innerHTML = `
+  <section class="hero">
+    <h1>¿En qué sede encuentro mi medicamento?</h1>
+    <p>Consulta en tiempo real la disponibilidad en las sedes de tu EPS antes de desplazarte.</p>
+    <form class="search" id="sf" role="search" onsubmit="return false">
+      <label><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>
+        <span class="sr">Buscar medicamento</span>
+        <input id="q" type="search" autocomplete="off" placeholder="Nombre, principio activo o concentración…" value="${esc(f.q)}"></label>
+      <button type="button" class="clear" id="qc" aria-label="Borrar búsqueda" ${f.q ? '' : 'hidden'}>✕</button>
+      <kbd class="hide-s" title="Atajo de teclado">/</kbd>
+    </form>
+    <div class="chips"><span>Más buscados:</span>${pop.map(m => `<button data-chip="${esc(m.nombre)}">${esc(m.nombre)}</button>`).join('')}</div>
+  </section>
 
-            for (let i = 0; i < columnas.length; i++) {
-                html += "<th>" + escaparHTML(columnas[i]) + "</th>";
-            }
+  <div class="kpis">
+    <div class="kpi"><div class="ic">💊</div><div><b>${fmt(S.meds.length)}</b><span>Medicamentos en catálogo</span></div></div>
+    <a class="kpi" href="#/sedes" style="text-decoration:none;color:inherit"><div class="ic">📍</div><div><b>${fmt(S.sedes.length)}</b><span>Sedes en Bogotá</span></div></a>
+    <button class="kpi w" data-kpi="bajo"><div class="ic">▲</div><div><b>${fmt(bajos)}</b><span>Registros con stock bajo o crítico</span></div></button>
+    <button class="kpi o" data-kpi="out"><div class="ic">✕</div><div><b>${fmt(agot)}</b><span>Registros agotados</span></div></button>
+  </div>
 
-            html += "</tr></thead><tbody>";
+  <div class="filters">
+    <div class="count" id="count"></div>
+    <label class="sel"><span>Localidad</span><select id="floc"><option value="">Todas</option>${S.localidades.map(l => `<option ${l === f.loc ? 'selected' : ''}>${esc(l)}</option>`).join('')}</select></label>
+    <div class="seg" role="group" aria-label="Disponibilidad"><button data-stock="all" class="${f.stock === 'all' ? 'on' : ''}">Todos</button><button data-stock="con" class="${f.stock === 'con' ? 'on' : ''}">Con stock</button></div>
+    <label class="sel"><span>Fórmula</span><select id="frx"><option value="all">Todas</option><option value="si" ${f.rx === 'si' ? 'selected' : ''}>Requiere fórmula</option><option value="no" ${f.rx === 'no' ? 'selected' : ''}>Venta libre</option></select></label>
+    <label class="sel"><span>Ordenar</span><select id="fsort"><option value="nombre">Nombre A–Z</option><option value="disp" ${f.sort === 'disp' ? 'selected' : ''}>Más sedes disponibles</option><option value="stock" ${f.sort === 'stock' ? 'selected' : ''}>Mayor stock total</option></select></label>
+  </div>
+  <div class="grid" id="res"></div>`;
 
-            for (let i = 0; i < lista.length; i++) {
-                html += "<tr>";
+  const q = $('#q');
+  q.oninput = () => { f.q = q.value; $('#qc').hidden = !f.q; renderResultados(); };
+  $('#qc').onclick = () => { f.q = ''; q.value = ''; $('#qc').hidden = true; renderResultados(); q.focus(); };
+  $$('[data-chip]').forEach(b => b.onclick = () => { f.q = b.dataset.chip; q.value = f.q; $('#qc').hidden = false; renderResultados(); document.querySelector('.filters').scrollIntoView({ behavior: 'smooth', block: 'start' }); });
+  $('#floc').onchange = e => { f.loc = e.target.value; renderResultados(); };
+  $('#frx').onchange = e => { f.rx = e.target.value; renderResultados(); };
+  $('#fsort').onchange = e => { f.sort = e.target.value; renderResultados(); };
+  $$('[data-stock]').forEach(b => b.onclick = () => { f.stock = b.dataset.stock; $$('[data-stock]').forEach(x => x.classList.toggle('on', x === b)); renderResultados(); });
+  $$('[data-kpi]').forEach(b => b.onclick = () => { location.hash = '#/disponibilidad'; S.fd.est = b.dataset.kpi === 'out' ? 'no_disponible' : 'bajo'; });
+  renderResultados();
+}
 
-                for (let j = 0; j < columnas.length; j++) {
-                    let valor = lista[i][columnas[j]];
+function renderResultados() {
+  const f = S.f, toks = norm(f.q).split(/\s+/).filter(Boolean);
+  let list = S.meds.filter(m => {
+    const hay = norm([m.nombre, m.principio_activo, m.concentracion, m.forma_farmaceutica, m.codigo_cum].join(' '));
+    if (!toks.every(t => hay.includes(t))) return false;
+    if (f.rx === 'si' && !m.requiere_formula) return false;
+    if (f.rx === 'no' && m.requiere_formula) return false;
+    return true;
+  }).map(m => ({ m, r: resumen(m, f.loc) }));
+  if (f.stock === 'con') list = list.filter(x => x.r.con > 0);
+  const by = { nombre: (a, b) => a.m.nombre.localeCompare(b.m.nombre, 'es'), disp: (a, b) => b.r.con - a.r.con || a.m.nombre.localeCompare(b.m.nombre, 'es'), stock: (a, b) => b.r.total - a.r.total };
+  list.sort(by[f.sort]);
+  $('#count').innerHTML = `${fmt(list.length)} ${plural(list.length, 'medicamento', 'medicamentos')} <small>${f.loc ? 'en ' + esc(f.loc) : 'en todas las sedes'}</small>`;
+  const sedes = sedesFiltradas(f.loc);
+  $('#res').innerHTML = list.length ? list.map(({ m, r }) => {
+    const dots = sedes.map(s => { const c = S.cell.get(m.id_medicamento + '|' + s.id_sede); const e = c ? c.estado : 'sin_registro';
+      return `<i class="dot ${EST[e].cls}" title="${esc(short(s.nombre))}: ${c ? fmt(c.qty) + ' u. · ' + EST[e].label : 'sin registro'}"></i>`; }).join('');
+    return `<div class="cardw"><a class="card" href="#/medicamento/${m.id_medicamento}">
+      <div class="top-row"><div><h3>${esc(m.nombre)} <span style="font-weight:500;color:var(--mut)">${esc(m.concentracion || '')}</span></h3>
+        <div class="sub">${esc(m.principio_activo)} · ${esc(m.forma_farmaceutica)}${m.via_administracion ? ' · ' + esc(m.via_administracion) : ''}</div></div>${pill(r.con ? r.best : (r.rows.length ? 'no_disponible' : 'sin_registro'))}</div>
+      <div class="meta"><span class="tag ${m.requiere_formula ? 'rx' : 'otc'}">${m.requiere_formula ? 'Requiere fórmula' : 'Venta libre'}</span>${m.codigo_cum ? `<span class="tag">${esc(m.codigo_cum)}</span>` : ''}</div>
+      <div><span class="dotlabel">Disponibilidad por sede</span><div class="dots">${dots}</div></div>
+      <div class="foot"><span>En <b>${r.con}</b> de ${r.sedes} ${plural(r.sedes, 'sede', 'sedes')}</span><span><b>${fmt(r.total)}</b> unidades</span></div></a>${starBtn(m.id_medicamento)}</div>`;
+  }).join('') : `<div class="empty" style="grid-column:1/-1">🔎<b>Sin resultados</b>No encontramos medicamentos con esos criterios.<br><button id="clr">Limpiar filtros</button></div>`;
+  bindStars($('#res'));
+  const c = $('#clr'); if (c) c.onclick = () => { S.f = { q: '', loc: '', stock: 'all', rx: 'all', sort: 'nombre' }; viewBuscar(); };
+}
 
-                    if (valor === null || valor === undefined) {
-                        valor = "—";
-                    } else if (typeof valor === "object") {
-                        valor = JSON.stringify(valor);
-                    }
+/* ===== Detalle de medicamento ===== */
+function viewMed(id) {
+  const m = S.medById.get(+id);
+  if (!m) return notFound('medicamento');
+  const r = resumen(m), rows = (S.byMed.get(m.id_medicamento) || []).slice().sort((a, b) => b.qty - a.qty);
+  const sin = S.sedes.filter(s => !S.cell.has(m.id_medicamento + '|' + s.id_sede));
+  const crit = rows.filter(x => x.estado === 'critico' || x.estado === 'bajo').length;
+  const f = S.fm;
+  app.innerHTML = `
+  <div class="crumbs"><a href="#/buscar">Medicamentos</a> › <span>${esc(m.nombre)}</span></div>
+  <section class="head">
+    <div>
+      <h1>${esc(m.nombre)} <span style="font-weight:500;color:var(--mut)">${esc(m.concentracion || '')}</span></h1>
+      <div class="sub">${esc(m.principio_activo)} · ${esc(m.forma_farmaceutica)}${m.via_administracion ? ' · vía ' + esc(m.via_administracion).toLowerCase() : ''}</div>
+      <div class="meta">${pill(r.con ? r.best : 'no_disponible')}${starBtn(m.id_medicamento, true)}<span class="tag ${m.requiere_formula ? 'rx' : 'otc'}">${m.requiere_formula ? 'Requiere fórmula médica' : 'Venta libre'}</span>
+        ${m.codigo_cum ? `<span class="tag">CUM ${esc(m.codigo_cum)}</span>` : ''}${m.codigo_ium ? `<span class="tag">IUM ${esc(m.codigo_ium)}</span>` : ''}</div>
+    </div>
+    <div class="facts">
+      <div class="fact"><b>${r.con}<span style="font-size:16px;color:var(--mut)">/${r.sedes}</span></b><span>sedes con stock</span></div>
+      <div class="fact"><b>${fmt(r.total)}</b><span>unidades en total</span></div>
+      <div class="fact"><b class="${crit ? 'warn' : ''}">${crit}</b><span>sedes en alerta</span></div>
+    </div>
+  </section>
+  <div class="split">
+    <section class="panel">
+      <h2>Disponibilidad por sede <label class="seg" style="border:0;padding:0"><span class="sr">Filtro</span></label>
+        <span class="seg" role="group"><button data-m="all" class="${f.est === 'all' ? 'on' : ''}">Todas</button><button data-m="con" class="${f.est === 'con' ? 'on' : ''}">Con stock</button></span></h2>
+      <div class="rows" id="medrows"></div>
+      ${legend}
+    </section>
+    <section class="panel"><h2>Mapa <small>marcador = unidades disponibles</small></h2><div class="mapbox" id="map"></div></section>
+  </div>
+  <section class="panel" style="margin-top:18px"><h2>Trazabilidad <small>últimos movimientos de inventario</small></h2><div id="movs" class="note">Cargando movimientos…</div></section>`;
 
-                    html += "<td>" + escaparHTML(valor) + "</td>";
-                }
+  const paint = () => {
+    const vis = rows.filter(x => f.est === 'all' || x.qty > 0);
+    $('#medrows').innerHTML = (vis.map(x => { const s = S.sedeById.get(x.id_sede); if (!s) return '';
+      return `<div class="row">
+        <div><a class="nm" href="#/sede/${s.id_sede}">${esc(s.nombre)}</a><small>${esc(s.localidad)} · ${esc(s.direccion)}</small><small>${openBadge(s.horario)} ${esc(s.horario || '')}</small></div>
+        <div><div class="qty"><b class="${EST[x.estado].cls}">${fmt(x.qty)}</b>${bar(x)}</div><small style="margin-top:4px">${pill(x.estado)} mín. ${fmt(x.min)} · act. ${dateShort(x.fecha)}</small></div>
+        <div class="acts"><a class="btn ghost sm" target="_blank" rel="noopener" href="${mapsLink(s)}">Cómo llegar</a>${s.telefono ? `<a class="btn ghost sm" href="tel:${esc(s.telefono)}">Llamar</a>` : ''}${canOperate() ? `<button class="btn sm" data-mov="${x.id_inventario}">± Movimiento</button>` : ''}</div></div>`; }).join('')
+      || '<p class="note">Ninguna sede tiene stock de este medicamento en este momento.</p>')
+      + (sin.length && f.est === 'all' ? `<p class="note"><b>Sin registro en:</b> ${sin.map(s => esc(short(s.nombre))).join(', ')}.</p>` : '');
+    $$('[data-mov]', app).forEach(b => b.onclick = () => openMov(+b.dataset.mov));
+  };
+  paint(); bindStars(app);
+  $$('[data-m]').forEach(b => b.onclick = () => { f.est = b.dataset.m; $$('[data-m]').forEach(x => x.classList.toggle('on', x === b)); paint(); });
 
-                html += "</tr>";
-            }
+  drawMap($('#map'), S.sedes.map(s => { const c = S.cell.get(m.id_medicamento + '|' + s.id_sede); const e = c ? c.estado : 'sin_registro';
+    return { s, cls: EST[e].cls, txt: c ? (c.qty > 999 ? '999+' : c.qty) : '–', tip: `<b>${esc(s.nombre)}</b><br>${c ? fmt(c.qty) + ' u. · ' + EST[e].label : 'Sin registro'}` }; }), goSede);
+  loadMovs(m);
+}
 
-            html += "</tbody></table>";
-            elemento.innerHTML = html;
-        }
+async function loadMovs(m) {
+  const box = $('#movs'); if (!box) return;
+  let rows = [];
+  try {
+    if (S.demo) throw 0;
+    rows = await api(`/api/inventario/movimientos/${m.id_medicamento}?limit=12`);
+  } catch (e) { rows = S.movs.filter(x => x.id_medicamento === m.id_medicamento).map(x => ({ ...x })); }
+  if (!$('#movs')) return;
+  if (!rows.length) { box.innerHTML = S.demo ? 'Sin movimientos registrados en esta sesión de demostración.' : 'Aún no hay movimientos registrados para este medicamento.'; return; }
+  box.className = 'mvwrap';
+  box.innerHTML = `<table class="mv"><thead><tr><th>Fecha</th><th>Sede</th><th>Tipo</th><th>Cantidad</th><th>Stock</th><th>Fuente</th></tr></thead><tbody>${rows.map(x => {
+    const inv = S.invById.get(x.id_inventario), s = inv && S.sedeById.get(inv.id_sede);
+    return `<tr><td>${dateTime(x.fecha_hora)}</td><td>${s ? esc(short(s.nombre)) : '—'}</td><td class="tipo ${esc(x.tipo_movimiento)}">${esc(x.tipo_movimiento)}</td><td>${x.tipo_movimiento === 'salida' ? '−' : '+'}${fmt(x.cantidad)}</td><td>${fmt(x.stock_anterior)} → <b>${fmt(x.stock_nuevo)}</b></td><td>${esc(x.fuente)}</td></tr>`; }).join('')}</tbody></table>`;
+}
 
-        async function cargarMedicamentos(boton) {
-            mostrarSeccion("medicamentos", boton);
+/* ===== Sedes ===== */
+function viewSedes() {
+  const f = S.fs;
+  app.innerHTML = `
+  <div class="head" style="margin-bottom:18px"><div><h1>Sedes de atención</h1><div class="sub">${S.sedes.length} sedes en ${S.localidades.length} localidades de Bogotá. Elige una para ver su inventario.</div></div></div>
+  <div class="filters" style="margin-top:0">
+    <input class="field" id="sq" type="search" placeholder="Buscar sede, dirección…" value="${esc(f.q)}" aria-label="Buscar sede">
+    <label class="sel"><span>Localidad</span><select id="sloc"><option value="">Todas</option>${S.localidades.map(l => `<option ${l === f.loc ? 'selected' : ''}>${esc(l)}</option>`).join('')}</select></label>
+    <div class="count" id="scount" style="text-align:right"></div>
+  </div>
+  <div class="split" style="margin-top:0;grid-template-columns:minmax(0,1fr) minmax(0,1.1fr)">
+    <div id="slist" style="display:flex;flex-direction:column;gap:12px"></div>
+    <section class="panel" style="position:sticky;top:84px"><h2>Mapa de sedes</h2><div class="mapbox" id="map" style="height:min(620px,calc(100vh - 220px))"></div>${legend}</section>
+  </div>`;
+  const paint = () => {
+    const toks = norm(f.q).split(/\s+/).filter(Boolean);
+    const list = S.sedes.filter(s => (!f.loc || s.localidad === f.loc) && toks.every(t => norm([s.nombre, s.direccion, s.localidad].join(' ')).includes(t)));
+    $('#scount').innerHTML = `${list.length} ${plural(list.length, 'sede', 'sedes')}`;
+    $('#slist').innerHTML = list.map(s => { const rows = S.bySede.get(s.id_sede) || [];
+      const c = k => rows.filter(r => r.estado === k).length;
+      return `<a class="card" href="#/sede/${s.id_sede}" data-sid="${s.id_sede}">
+        <div class="top-row"><div><h3>${esc(s.nombre)}</h3><div class="sub">${esc(s.direccion)} · ${esc(s.localidad)}</div></div>${openBadge(s.horario)}</div>
+        <div class="sub">🕑 ${esc(s.horario || 'Horario no disponible')}${s.telefono ? ' · 📞 ' + esc(s.telefono) : ''}</div>
+        <div class="meta"><span class="pill ok">${c('disponible')} disponibles</span>${c('bajo') ? `<span class="pill warn">${c('bajo')} bajos</span>` : ''}${c('critico') ? `<span class="pill crit">${c('critico')} críticos</span>` : ''}${c('no_disponible') ? `<span class="pill out">${c('no_disponible')} agotados</span>` : ''}</div>
+        <div class="foot"><span><b>${rows.length}</b> medicamentos registrados</span><span style="color:var(--teal-d);font-weight:700">Ver inventario →</span></div></a>`; }).join('')
+      || `<div class="empty"><b>Sin sedes</b>No hay sedes con esos criterios.</div>`;
+    destroyMap();
+    drawMap($('#map'), list.map(s => { const rows = S.bySede.get(s.id_sede) || []; const bad = rows.filter(r => r.estado === 'critico' || r.estado === 'no_disponible').length;
+      const cls = !rows.length ? 'none' : bad > rows.length / 2 ? 'crit' : bad ? 'warn' : 'ok';
+      return { s, cls, txt: '✚', tip: `<b>${esc(s.nombre)}</b><br>${esc(s.direccion)}<br>${rows.length} medicamentos · ${bad} en alerta` }; }), goSede);
+    $$('#slist .card').forEach(c => { c.onmouseenter = () => { const mk = S.markers[c.dataset.sid]; if (mk) mk.openTooltip(); }; c.onmouseleave = () => { const mk = S.markers[c.dataset.sid]; if (mk) mk.closeTooltip(); }; });
+  };
+  paint();
+  $('#sq').oninput = e => { f.q = e.target.value; paint(); };
+  $('#sloc').onchange = e => { f.loc = e.target.value; paint(); };
+}
 
-            const resultado = document.getElementById("resultadoMedicamentos");
-            resultado.innerHTML = '<p class="mensaje">Consultando medicamentos...</p>';
+/* ===== Detalle de sede ===== */
+function viewSede(id) {
+  const s = S.sedeById.get(+id);
+  if (!s) return notFound('sede');
+  const rows = S.bySede.get(s.id_sede) || [], f = S.fd2 || (S.fd2 = { q: '', est: 'all' });
+  const cnt = k => rows.filter(r => r.estado === k).length;
+  app.innerHTML = `
+  <div class="crumbs"><a href="#/sedes">Sedes</a> › <span>${esc(s.nombre)}</span></div>
+  <section class="head"><div><h1>${esc(s.nombre)}</h1><div class="sub">${esc(s.direccion)} · ${esc(s.localidad)}, Bogotá</div>
+    <div class="info"><div><span>Horario</span>${esc(s.horario || '—')} ${openBadge(s.horario)}</div><div><span>Teléfono</span>${s.telefono ? `<a href="tel:${esc(s.telefono)}">${esc(s.telefono)}</a>` : '—'}</div></div>
+    <div class="meta" style="margin-top:14px"><a class="btn" target="_blank" rel="noopener" href="${mapsLink(s)}">Cómo llegar</a>${s.telefono ? `<a class="btn ghost" href="tel:${esc(s.telefono)}">Llamar</a>` : ''}</div></div>
+    <div class="facts"><div class="fact"><b>${rows.length}</b><span>medicamentos</span></div><div class="fact"><b class="ok">${cnt('disponible')}</b><span>disponibles</span></div><div class="fact"><b class="warn">${cnt('bajo') + cnt('critico')}</b><span>bajos / críticos</span></div><div class="fact"><b class="out">${cnt('no_disponible')}</b><span>agotados</span></div></div></section>
+  <div class="split">
+    <section class="panel"><h2>Inventario de la sede</h2>
+      <div style="padding:12px 18px;display:flex;gap:10px;flex-wrap:wrap;border-bottom:1px solid var(--line)">
+        <input class="field" id="iq" type="search" placeholder="Filtrar medicamento…" value="${esc(f.q)}" aria-label="Filtrar medicamento">
+        <label class="sel"><span>Estado</span><select id="ie"><option value="all">Todos</option>${['disponible', 'bajo', 'critico', 'no_disponible'].map(k => `<option value="${k}" ${f.est === k ? 'selected' : ''}>${EST[k].label} (${cnt(k)})</option>`).join('')}</select></label></div>
+      <div class="rows" id="irows"></div>${legend}</section>
+    <section class="panel"><h2>Ubicación</h2><div class="mapbox" id="map"></div></section>
+  </div>`;
+  const paint = () => {
+    const toks = norm(f.q).split(/\s+/).filter(Boolean);
+    const vis = rows.map(r => ({ r, m: S.medById.get(r.id_medicamento) })).filter(x => x.m && (f.est === 'all' || x.r.estado === f.est) && toks.every(t => norm(x.m.nombre + ' ' + x.m.principio_activo).includes(t)))
+      .sort((a, b) => EST[a.r.estado].rank - EST[b.r.estado].rank || a.m.nombre.localeCompare(b.m.nombre, 'es'));
+    $('#irows').innerHTML = vis.map(({ r, m }) => `<div class="row">
+      <div><a class="nm" href="#/medicamento/${m.id_medicamento}">${esc(m.nombre)} ${esc(m.concentracion || '')}</a><small>${esc(m.principio_activo)} · ${esc(m.forma_farmaceutica)}</small></div>
+      <div><div class="qty"><b class="${EST[r.estado].cls}">${fmt(r.qty)}</b>${bar(r)}</div><small style="margin-top:4px">${pill(r.estado)} mín. ${fmt(r.min)}</small></div>
+      <div class="acts">${canOperate() ? `<button class="btn sm" data-mov="${r.id_inventario}">± Movimiento</button>` : ''}<a class="btn ghost sm" href="#/medicamento/${m.id_medicamento}">Otras sedes</a></div></div>`).join('') || '<p class="note">Sin medicamentos con esos criterios.</p>';
+    $$('[data-mov]', app).forEach(b => b.onclick = () => openMov(+b.dataset.mov));
+  };
+  paint();
+  $('#iq').oninput = e => { f.q = e.target.value; paint(); };
+  $('#ie').onchange = e => { f.est = e.target.value; paint(); };
+  drawMap($('#map'), [{ s, cls: 'ok', txt: '✚', tip: `<b>${esc(s.nombre)}</b><br>${esc(s.direccion)}` }], () => {});
+  if (S.map) S.map.setView(posOf(s), 14);
+}
 
-            try {
-                const datos = await pedirDatos("/api/medicamentos");
-                mostrarTabla("resultadoMedicamentos", "tablaMedicamentos", datos);
+/* ===== Matriz de disponibilidad ===== */
+function viewMatriz() {
+  const f = S.fd;
+  app.innerHTML = `
+  <div class="head" style="margin-bottom:18px"><div><h1>Mapa de calor de disponibilidad</h1><div class="sub">Todos los medicamentos frente a todas las sedes. Haz clic en una celda para ver el detalle.</div></div></div>
+  <section class="panel">
+    <div style="padding:14px 18px;display:flex;gap:10px;flex-wrap:wrap;align-items:center">
+      <input class="field" id="dq" type="search" placeholder="Filtrar medicamento…" value="${esc(f.q)}" aria-label="Filtrar medicamento">
+      <div class="seg" role="group" aria-label="Estado">${[['all', 'Todos'], ['disponible', 'Disponible'], ['bajo', 'Bajo'], ['critico', 'Crítico'], ['no_disponible', 'Agotado']].map(([k, l]) => `<button data-e="${k}" class="${f.est === k ? 'on' : ''}">${l}</button>`).join('')}</div>
+      <span style="margin-left:auto;color:var(--mut);font-size:13px" id="dcount"></span>
+    </div>
+    <div class="mx-wrap" id="mx"></div>${legend}
+  </section>`;
+  const paint = () => {
+    const toks = norm(f.q).split(/\s+/).filter(Boolean);
+    const meds = S.meds.filter(m => toks.every(t => norm(m.nombre + ' ' + m.principio_activo).includes(t)) &&
+      (f.est === 'all' || (S.byMed.get(m.id_medicamento) || []).some(r => r.estado === f.est)));
+    $('#dcount').textContent = `${meds.length} medicamentos × ${S.sedes.length} sedes`;
+    $('#mx').innerHTML = `<table class="mx"><thead><tr><th class="first">Medicamento</th>${S.sedes.map(s => `<th><a href="#/sede/${s.id_sede}" title="${esc(s.nombre)}"><span>${esc(short(s.nombre))}</span></a></th>`).join('')}<th class="tot"><span>Total</span></th></tr></thead><tbody>
+      ${meds.map(m => { let tot = 0;
+        const tds = S.sedes.map(s => { const c = S.cell.get(m.id_medicamento + '|' + s.id_sede); if (c) tot += c.qty;
+          const hl = f.est !== 'all' && c && c.estado !== f.est ? 'opacity:.35' : '';
+          return c ? `<td class="c ${EST[c.estado].cls}" style="${hl}"><a href="#/medicamento/${m.id_medicamento}" title="${esc(m.nombre)} · ${esc(s.nombre)}: ${fmt(c.qty)} u. (${EST[c.estado].label})">${fmt(c.qty)}</a></td>`
+                   : `<td class="c none"><a href="#/medicamento/${m.id_medicamento}" title="${esc(m.nombre)} · ${esc(s.nombre)}: sin registro">·</a></td>`; }).join('');
+        return `<tr><td class="first"><a href="#/medicamento/${m.id_medicamento}">${esc(m.nombre)}</a><small>${esc(m.concentracion || '')} · ${esc(m.forma_farmaceutica)}</small></td>${tds}<td class="tot">${fmt(tot)}</td></tr>`; }).join('')}
+      </tbody></table>` + (meds.length ? '' : '<p class="note">Sin resultados.</p>');
+  };
+  paint();
+  $('#dq').oninput = e => { f.q = e.target.value; paint(); };
+  $$('[data-e]').forEach(b => b.onclick = () => { f.est = b.dataset.e; $$('[data-e]').forEach(x => x.classList.toggle('on', x === b)); paint(); });
+}
 
-                document.getElementById("totalMedicamentos").textContent =
-                    obtenerLista(datos).length;
+function notFound(what) {
+  app.innerHTML = `<div class="empty">🧭<b>No encontramos ese ${what}</b>Puede que ya no exista o que el enlace sea incorrecto.<br><a class="btn" style="margin-top:14px" href="#/buscar">Volver al inicio</a></div>`;
+}
 
-                const busqueda = document.getElementById("buscarMedicamento").value;
-                if (busqueda) {
-                    filtrarTabla("tablaMedicamentos", busqueda);
-                }
-            } catch (error) {
-                resultado.innerHTML =
-                    '<p class="mensaje error">No se pudieron cargar los medicamentos. ' +
-                    escaparHTML(error.message) + '</p>';
-            }
-        }
+/* ---------- movimientos (modo operador) ---------- */
+function openMov(invId) {
+  const r = S.invById.get(invId); if (!r) return;
+  const m = S.medById.get(r.id_medicamento), s = S.sedeById.get(r.id_sede);
+  let tipo = 'entrada';
+  const dlg = $('#dlg');
+  dlg.innerHTML = `<h2 id="mTitle">Registrar movimiento</h2><div class="sub">${esc(m.nombre)} ${esc(m.concentracion || '')} · ${esc(s.nombre)}</div>
+    <div class="cur"><div><span style="font-size:12px;color:var(--mut)">Stock actual</span><br><b id="mCur">${fmt(r.qty)}</b></div>${pill(r.estado)}</div>
+    <label>Tipo de movimiento</label><div class="seg" id="mTipo"><button type="button" data-t="entrada" class="on">Entrada</button><button type="button" data-t="salida">Salida</button></div>
+    <label for="mCant">Cantidad</label><input class="field" id="mCant" type="number" min="1" step="1" value="10" inputmode="numeric">
+    <div id="mErr" class="err" hidden></div>
+    <div class="act"><button type="button" class="btn ghost" id="mCancel">Cancelar</button><button type="button" class="btn" id="mOk">Registrar</button></div>`;
+  $('#modal').classList.add('on'); setTimeout(() => $('#mCant').select(), 30);
+  $$('#mTipo button').forEach(b => b.onclick = () => { tipo = b.dataset.t; $$('#mTipo button').forEach(x => x.classList.toggle('on', x === b)); $$('#mTipo button').forEach(x => x.classList.toggle('salida', tipo === 'salida')); });
+  $('#mCancel').onclick = closeModal;
+  $('#mOk').onclick = async () => {
+    const cant = parseInt($('#mCant').value, 10), err = $('#mErr'); err.hidden = true;
+    if (!(cant > 0)) { err.textContent = 'Ingresa una cantidad entera mayor a 0.'; err.hidden = false; return; }
+    const btn = $('#mOk'); btn.disabled = true; btn.textContent = 'Guardando…';
+    try {
+      let nuevo, mov;
+      if (S.demo) {
+        if (tipo === 'salida' && cant > r.qty) throw new Error(`Salida (${cant}) supera el stock disponible (${r.qty}).`);
+        nuevo = r.qty + (tipo === 'entrada' ? cant : -cant);
+        mov = { id_medicamento: r.id_medicamento, id_inventario: r.id_inventario, tipo_movimiento: tipo, cantidad: cant, stock_anterior: r.qty, stock_nuevo: nuevo, fuente: 'demo', fecha_hora: new Date().toISOString() };
+        S.movs.unshift(mov);
+      } else {
+        mov = await api('/api/inventario/' + tipo, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id_medicamento: r.id_medicamento, id_sede: r.id_sede, cantidad: cant, fuente: 'manual' }) });
+        nuevo = mov.stock_nuevo;
+      }
+      S.rep.data = null; r.qty = nuevo; r.estado = estadoOf(nuevo, r.min); r.fecha = new Date().toISOString();
+      closeModal(); toast(`${tipo === 'entrada' ? 'Entrada' : 'Salida'} registrada: ${m.nombre} en ${short(s.nombre)} → ${fmt(nuevo)} u.`); render(true);
+    } catch (e) { err.textContent = e.message; err.hidden = false; btn.disabled = false; btn.textContent = 'Registrar'; }
+  };
+}
+function closeModal() { $('#modal').classList.remove('on'); }
+$('#modal').addEventListener('mousedown', e => { if (e.target.id === 'modal') closeModal(); });
 
-        async function cargarSedes(boton) {
-            mostrarSeccion("sedes", boton);
+let tt;
+function toast(msg, bad) { const t = $('#toast'); t.textContent = msg; t.className = 'toast on' + (bad ? ' bad' : ''); clearTimeout(tt); tt = setTimeout(() => t.classList.remove('on'), 3800); }
 
-            const resultado = document.getElementById("resultadoSedes");
-            resultado.innerHTML = '<p class="mensaje">Consultando sedes...</p>';
+/* ---------- router ---------- */
+function render(keepScroll) {
+  if (S.loading) return skeleton();
+  const h = (location.hash.replace(/^#\/?/, '') || 'buscar').split('/');
+  const [v, id] = h;
+  const key = v + '/' + (id || '');
+  const changed = key !== S.route; S.route = key;
+  destroyMap();
+  $$('nav a').forEach(a => a.classList.toggle('on', a.dataset.nav === (v === 'medicamento' ? 'buscar' : v === 'sede' ? 'sedes' : v)));
+  const y = scrollY;
+  ({ buscar: viewBuscar, medicamento: () => viewMed(id), sedes: viewSedes, sede: () => viewSede(id), disponibilidad: viewMatriz, inventario: viewInventario, reportes: viewReportes, cuenta: viewCuenta, ingresar: viewIngresar, registro: viewRegistro }[v] || viewBuscar)();
+  if (changed && !keepScroll) { scrollTo(0, 0); document.title = 'MEDIRED | ' + ({ buscar: 'Medicamentos', medicamento: (S.medById.get(+id) || {}).nombre, sedes: 'Sedes', sede: (S.sedeById.get(+id) || {}).nombre, disponibilidad: 'Disponibilidad', inventario: 'Inventario', reportes: 'Reportes', cuenta: 'Mi cuenta', ingresar: 'Ingresar', registro: 'Crear cuenta' }[v] || 'Medicamentos'); }
+  else scrollTo(0, y);
+}
+addEventListener('hashchange', () => render());
 
-            try {
-                const datos = await pedirDatos("/api/sedes");
-                mostrarTabla("resultadoSedes", "tablaSedes", datos);
+/* ---------- eventos globales ---------- */
+$('#btnRefresh').onclick = () => loadAll(true);
+addEventListener('keydown', e => {
+  if (e.key === 'Escape') closeModal();
+  if (e.key === '/' && !/input|select|textarea/i.test(document.activeElement.tagName)) { const q = $('#q'); if (q) { e.preventDefault(); q.focus(); } }
+});
+setInterval(() => { if (!S.demo && !document.hidden && !$('#modal').classList.contains('on') && !/input|select/i.test(document.activeElement.tagName)) loadAll(true); }, 90000);
 
-                document.getElementById("totalSedes").textContent =
-                    obtenerLista(datos).length;
+/* =====================================================================
+   NUEVO · Codificación, sesión, cuentas, favoritos, inventario y reportes
+   ===================================================================== */
 
-                const busqueda = document.getElementById("buscarSede").value;
-                if (busqueda) {
-                    filtrarTabla("tablaSedes", busqueda);
-                }
-            } catch (error) {
-                resultado.innerHTML =
-                    '<p class="mensaje error">No se pudieron cargar las sedes. ' +
-                    escaparHTML(error.message) + '</p>';
-            }
-        }
+/* ---------- reparar tildes dañadas (EngativÃ¡ -> Engativá) ---------- */
+const CP1252 = { 0x20AC:0x80,0x201A:0x82,0x0192:0x83,0x201E:0x84,0x2026:0x85,0x2020:0x86,0x2021:0x87,0x02C6:0x88,0x2030:0x89,0x0160:0x8A,0x2039:0x8B,0x0152:0x8C,0x017D:0x8E,0x2018:0x91,0x2019:0x92,0x201C:0x93,0x201D:0x94,0x2022:0x95,0x2013:0x96,0x2014:0x97,0x02DC:0x98,0x2122:0x99,0x0161:0x9A,0x203A:0x9B,0x0153:0x9C,0x017E:0x9E,0x0178:0x9F };
+function fixText(s) {
+  if (typeof s !== 'string' || !/[ÃÂ]/.test(s)) return s;
+  try {
+    const bytes = new Uint8Array([...s].map(ch => { const n = ch.codePointAt(0); if (n < 256) return n; if (CP1252[n]) return CP1252[n]; throw 0; }));
+    return new TextDecoder('utf-8', { fatal: true }).decode(bytes);
+  } catch (e) { return s; }
+}
+const fixObj = (o, keys) => { for (const k of keys) if (typeof o[k] === 'string') o[k] = fixText(o[k]); return o; };
 
-        function mostrarInventario(boton) {
-            mostrarSeccion("inventario", boton);
-        }
+/* ---------- sesión y roles ---------- */
+const ROL = { paciente: 'Paciente', operador_inventario: 'Operador de inventario', administrador: 'Administrador', analista: 'Analista' };
+const canOperate = () => !!S.user && ['operador_inventario', 'administrador'].includes(S.user.rol);
+const isStaff = () => !!S.user && S.user.rol !== 'paciente';
+const initials = n => String(n || '?').split(/\s+/).filter(Boolean).slice(0, 2).map(w => w[0]).join('').toUpperCase();
 
-        async function consultarInventario() {
-            const id = document.getElementById("idMedicamento").value;
-            const resultado = document.getElementById("resultadoInventario");
+function loadSession() {
+  try { const j = JSON.parse(localStorage.getItem('medired.session') || 'null'); if (j && j.token) { S.token = j.token; S.user = j.user; S.sessionDemo = !!j.demo; } } catch (e) {}
+}
+function persistSession() { try { localStorage.setItem('medired.session', JSON.stringify({ token: S.token, user: S.user, demo: S.demo })); } catch (e) {} }
+function saveSession(token, user) { S.token = token; S.user = user; S.sessionDemo = S.demo; persistSession(); loadFavs(); paintAuth(); }
+function logout(msg) {
+  S.token = null; S.user = null; S.favs = []; S.rep.data = null; S.rep.rows = null;
+  try { localStorage.removeItem('medired.session'); } catch (e) {}
+  paintAuth(); if (msg) toast(msg);
+  if (['cuenta'].includes(S.route.split('/')[0])) location.hash = '#/ingresar'; else render(true);
+}
+async function validateSession() {
+  if (!S.token) { paintAuth(); return; }
+  if (S.demo !== S.sessionDemo) { S.token = null; S.user = null; try { localStorage.removeItem('medired.session'); } catch (e) {} }
+  else if (!S.demo) {
+    try { S.user = await api('/api/auth/me'); persistSession(); }
+    catch (e) { if (e.status === 401) { S.token = null; S.user = null; try { localStorage.removeItem('medired.session'); } catch (x) {} } }
+  }
+  if (S.user) loadFavs();
+  paintAuth();
+}
+function paintAuth() {
+  const el = $('#auth'); if (!el) return;
+  el.innerHTML = S.user
+    ? `<a class="me" href="#/cuenta" title="Mi cuenta"><span class="av">${esc(initials(S.user.nombre))}</span><span class="hide-s"><b>${esc(S.user.nombre.split(' ')[0])}</b><small>${esc(ROL[S.user.rol] || S.user.rol)}</small></span></a><button class="iconbtn" id="btnOut" title="Cerrar sesión"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="M16 17l5-5-5-5M21 12H9"/></svg><span class="hide-s">Salir</span></button>`
+    : `<a class="iconbtn" href="#/ingresar">Ingresar</a><a class="btn sm" href="#/registro">Crear cuenta</a>`;
+  const o = $('#btnOut'); if (o) o.onclick = () => { logout('Sesión cerrada'); };
+}
+function requireLogin(next) { S.next = next || location.hash; toast('Inicia sesión para continuar'); location.hash = '#/ingresar'; }
 
-            if (!id || Number(id) < 1) {
-                resultado.className = "mensaje error";
-                resultado.textContent = "Ingresa un ID válido mayor que cero.";
-                return;
-            }
+/* ---------- cuentas en modo demostración (solo navegador) ---------- */
+async function sha(s) {
+  try { const b = await crypto.subtle.digest('SHA-256', new TextEncoder().encode('medired-demo|' + s)); return [...new Uint8Array(b)].map(x => x.toString(16).padStart(2, '0')).join(''); }
+  catch (e) { return 'x' + btoa(unescape(encodeURIComponent(s))); }
+}
+async function demoUsers() {
+  if (S._du) return S._du;
+  let u = []; try { u = JSON.parse(localStorage.getItem('medired.demo.users') || '[]'); } catch (e) {}
+  if (!u.length) {
+    const h = await sha('Medired2026');
+    u = [['administrador', 'DEMO-ADMIN', 'Administrador MEDIRED', 'admin@medired.test', 9001], ['operador_inventario', 'DEMO-OPER', 'Operador de Inventario', 'operador@medired.test', 9002], ['analista', 'DEMO-ANAL', 'Analista de Datos', 'analista@medired.test', 9003]]
+      .map(([rol, documento, nombre, email, id_usuario]) => ({ id_usuario, documento, nombre, email, telefono: null, rol, activo: true, h }));
+  }
+  return (S._du = u);
+}
+function saveDemoUsers() { try { localStorage.setItem('medired.demo.users', JSON.stringify(S._du)); } catch (e) {} }
+const pubUser = u => { const { h, ...r } = u; return r; };
 
-            resultado.className = "mensaje";
-            resultado.textContent = "Consultando inventario...";
+/* ---------- validaciones (iguales a las del backend) ---------- */
+const EMAIL_RE = /^[^@\s]+@[^@\s]+\.[^@\s]{2,}$/;
+function validarRegistro(f) {
+  const e = {};
+  if (!/^[A-Za-z0-9]{5,20}$/.test(f.documento)) e.documento = 'Solo letras y números, de 5 a 20 caracteres.';
+  if (f.nombre.trim().length < 3) e.nombre = 'Escribe tu nombre completo.';
+  if (!EMAIL_RE.test(f.email.trim())) e.email = 'Correo electrónico no válido.';
+  if (f.telefono && !/^\+?\d{7,15}$/.test(f.telefono.replace(/[\s-]/g, ''))) e.telefono = 'Solo números (7 a 15 dígitos).';
+  if (f.password.length < 8 || !/[A-Za-z]/.test(f.password) || !/\d/.test(f.password)) e.password = 'Mínimo 8 caracteres, con al menos una letra y un número.';
+  if (f.password !== f.password2) e.password2 = 'Las contraseñas no coinciden.';
+  if (!f.acepto) e.acepto = 'Debes autorizar el tratamiento de tus datos para crear la cuenta.';
+  return e;
+}
+function fuerza(p) {
+  let s = 0; if (p.length >= 8) s++; if (p.length >= 12) s++; if (/[a-z]/.test(p) && /[A-Z]/.test(p)) s++; if (/\d/.test(p)) s++; if (/[^A-Za-z0-9]/.test(p)) s++;
+  return Math.min(4, Math.max(p ? 1 : 0, s - (p.length < 8 ? 1 : 0)));
+}
+const eyeBtn = `<button type="button" class="eye" aria-label="Mostrar u ocultar contraseña" title="Mostrar / ocultar">👁</button>`;
+function bindEyes(root) { $$('.eye', root).forEach(b => b.onclick = () => { const i = b.parentElement.querySelector('input'); i.type = i.type === 'password' ? 'text' : 'password'; }); }
 
-            try {
-                const datos = await pedirDatos(
-                    "/api/inventario/" + encodeURIComponent(id)
-                );
+/* ---------- vista: ingresar ---------- */
+function viewIngresar() {
+  if (S.user) { location.hash = '#/cuenta'; return; }
+  app.innerHTML = `<div class="authwrap">
+    <section class="authcard">
+      <h1>Ingresa a MEDIRED</h1><p class="sub">Guarda tus medicamentos, consulta su disponibilidad y accede según tu rol.</p>
+      <form id="lf" novalidate>
+        <label>Correo o documento<input id="li" autocomplete="username" placeholder="tucorreo@ejemplo.com" required></label>
+        <label>Contraseña<span class="pw"><input id="lp" type="password" autocomplete="current-password" required>${eyeBtn}</span></label>
+        <div class="ferr" id="lerr" hidden></div>
+        <button class="btn" id="lbtn" style="width:100%;justify-content:center">Ingresar</button>
+      </form>
+      <p class="alt">¿Aún no tienes cuenta? <a href="#/registro"><b>Crear cuenta</b></a></p>
+      ${S.demo ? `<div class="demohint"><b>Modo demostración</b> · cuentas de prueba (contraseña <code>Medired2026</code>):<div class="chips2"><button type="button" data-d="operador@medired.test">Operador</button><button type="button" data-d="analista@medired.test">Analista</button><button type="button" data-d="admin@medired.test">Administrador</button></div></div>` : ''}
+    </section>
+    <aside class="authside"><h2>¿Para qué sirve tu cuenta?</h2>
+      <ul><li><b>Pacientes:</b> guardan sus medicamentos favoritos y ven cuándo hay stock.</li><li><b>Operadores:</b> registran entradas y salidas de inventario.</li><li><b>Analistas y administradores:</b> acceden a los reportes de movimientos y gestionan usuarios.</li></ul>
+      <p class="fine">Tus datos se tratan conforme a la Ley 1581 de 2012 (protección de datos personales).</p></aside></div>`;
+  bindEyes(app);
+  $$('[data-d]').forEach(b => b.onclick = () => { $('#li').value = b.dataset.d; $('#lp').value = 'Medired2026'; });
+  $('#lf').onsubmit = async ev => {
+    ev.preventDefault();
+    const id = $('#li').value.trim(), pw = $('#lp').value, err = $('#lerr'), btn = $('#lbtn'); err.hidden = true;
+    if (!id || !pw) { err.textContent = 'Escribe tu correo o documento y tu contraseña.'; err.hidden = false; return; }
+    btn.disabled = true; btn.textContent = 'Ingresando…';
+    try {
+      let ses;
+      if (S.demo) {
+        const us = await demoUsers(), h = await sha(pw);
+        const u = us.find(x => (x.email.toLowerCase() === id.toLowerCase() || x.documento.toLowerCase() === id.toLowerCase()) && x.h === h);
+        if (!u) throw new Error('Correo/documento o contraseña incorrectos.');
+        ses = { token: 'demo:' + u.id_usuario, usuario: pubUser(u) };
+      } else ses = await api('/api/auth/login', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ identificador: id, password: pw }) });
+      saveSession(ses.token, ses.usuario); toast('¡Bienvenida/o, ' + ses.usuario.nombre.split(' ')[0] + '!');
+      const n = S.next; S.next = null; location.hash = n && !/ingresar|registro/.test(n) ? n : '#/cuenta';
+    } catch (e) { err.textContent = e.message; err.hidden = false; btn.disabled = false; btn.textContent = 'Ingresar'; }
+  };
+}
 
-                resultado.textContent = JSON.stringify(datos, null, 2);
-                resultado.className = "mensaje exito";
-            } catch (error) {
-                resultado.className = "mensaje error";
-                resultado.textContent =
-                    "No se pudo consultar el inventario. " + error.message;
-            }
-        }
+/* ---------- vista: registro ---------- */
+function viewRegistro() {
+  if (S.user) { location.hash = '#/cuenta'; return; }
+  app.innerHTML = `<div class="authwrap">
+    <section class="authcard wide">
+      <h1>Crea tu cuenta</h1><p class="sub">Es gratis y toma menos de un minuto.</p>
+      <form id="rf" novalidate>
+        <div class="two">
+          <label>Nombre completo<input id="rn" autocomplete="name" placeholder="Laura Sofía Cadena"><em class="fe" data-e="nombre"></em></label>
+          <label>Documento de identidad<input id="rd" inputmode="text" autocomplete="off" placeholder="Sin puntos ni espacios"><em class="fe" data-e="documento"></em></label>
+        </div>
+        <div class="two">
+          <label>Correo electrónico<input id="re" type="email" autocomplete="email" placeholder="tucorreo@ejemplo.com"><em class="fe" data-e="email"></em></label>
+          <label>Teléfono <span class="opt">(opcional)</span><input id="rt" type="tel" autocomplete="tel" placeholder="3001234567"><em class="fe" data-e="telefono"></em></label>
+        </div>
+        <div class="two">
+          <label>Contraseña<span class="pw"><input id="rp" type="password" autocomplete="new-password" placeholder="Mín. 8, letras y números">${eyeBtn}</span><span class="meter" id="rm"><i></i><i></i><i></i><i></i></span><em class="fe" data-e="password"></em></label>
+          <label>Confirmar contraseña<span class="pw"><input id="rp2" type="password" autocomplete="new-password">${eyeBtn}</span><em class="fe" data-e="password2"></em></label>
+        </div>
+        <label class="chk"><input type="checkbox" id="ra"> <span>Autorizo el tratamiento de mis datos personales para el funcionamiento de MEDIRED, conforme a la Ley 1581 de 2012.</span></label><em class="fe" data-e="acepto"></em>
+        <div class="ferr" id="rerr" hidden></div>
+        <button class="btn" id="rbtn" style="width:100%;justify-content:center">Crear cuenta</button>
+      </form>
+      <p class="alt">¿Ya tienes cuenta? <a href="#/ingresar"><b>Ingresar</b></a></p>
+    </section></div>`;
+  bindEyes(app);
+  const get = () => ({ nombre: $('#rn').value, documento: $('#rd').value.trim(), email: $('#re').value, telefono: $('#rt').value.trim(), password: $('#rp').value, password2: $('#rp2').value, acepto: $('#ra').checked });
+  const showErr = er => $$('.fe', app).forEach(x => { x.textContent = er[x.dataset.e] || ''; });
+  $('#rp').oninput = () => { const f = fuerza($('#rp').value); $$('#rm i').forEach((i, k) => { i.className = k < f ? 'on s' + f : ''; }); };
+  $('#rf').onsubmit = async ev => {
+    ev.preventDefault(); const f = get(), er = validarRegistro(f), box = $('#rerr'); box.hidden = true; showErr(er);
+    if (Object.keys(er).length) { const first = $('.fe:not(:empty)', app); if (first) first.scrollIntoView({ block: 'center', behavior: 'smooth' }); return; }
+    const btn = $('#rbtn'); btn.disabled = true; btn.textContent = 'Creando cuenta…';
+    try {
+      const body = { documento: f.documento, nombre: f.nombre.trim(), email: f.email.trim().toLowerCase(), telefono: f.telefono ? f.telefono.replace(/[\s-]/g, '') : null, password: f.password };
+      let ses;
+      if (S.demo) {
+        const us = await demoUsers();
+        if (us.some(u => u.documento.toLowerCase() === body.documento.toLowerCase())) throw new Error('Ya existe una cuenta con ese documento.');
+        if (us.some(u => u.email.toLowerCase() === body.email)) throw new Error('Ya existe una cuenta con ese correo.');
+        const u = { id_usuario: 9100 + us.length, documento: body.documento, nombre: body.nombre, email: body.email, telefono: body.telefono, rol: 'paciente', activo: true, h: await sha(body.password), fecha_creacion: new Date().toISOString() };
+        us.push(u); saveDemoUsers(); ses = { token: 'demo:' + u.id_usuario, usuario: pubUser(u) };
+      } else ses = await api('/api/auth/registro', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+      saveSession(ses.token, ses.usuario); toast('¡Cuenta creada! Ya tienes sesión iniciada.');
+      const n = S.next; S.next = null; location.hash = n && !/ingresar|registro/.test(n) ? n : '#/cuenta';
+    } catch (e) { box.textContent = e.message; box.hidden = false; btn.disabled = false; btn.textContent = 'Crear cuenta'; }
+  };
+}
 
-        function filtrarTabla(id, texto) {
-            const tabla = document.getElementById(id);
-            if (!tabla) return;
+/* ---------- favoritos ("Mis medicamentos") ---------- */
+const favKey = () => 'medired.fav.' + (S.user ? S.user.id_usuario : '0');
+function loadFavs() { try { S.favs = JSON.parse(localStorage.getItem(favKey()) || '[]'); } catch (e) { S.favs = []; } }
+function toggleFav(id) {
+  const i = S.favs.indexOf(id); if (i >= 0) S.favs.splice(i, 1); else S.favs.push(id);
+  try { localStorage.setItem(favKey(), JSON.stringify(S.favs)); } catch (e) {}
+}
+const starBtn = (id, big) => { const on = S.favs.includes(id); return `<button class="star ${on ? 'on' : ''} ${big ? 'big' : ''}" data-fav="${id}" aria-pressed="${on}" title="${on ? 'Quitar de mis medicamentos' : 'Guardar en mis medicamentos'}">${on ? '★' : '☆'}${big ? ` <span>${on ? 'Guardado' : 'Guardar'}</span>` : ''}</button>`; };
+function bindStars(root) {
+  $$('[data-fav]', root).forEach(b => b.onclick = ev => {
+    ev.preventDefault(); ev.stopPropagation();
+    if (!S.user) return requireLogin(location.hash);
+    const id = +b.dataset.fav; toggleFav(id);
+    const big = b.classList.contains('big'); b.outerHTML = starBtn(id, big); bindStars(root);
+    toast(S.favs.includes(id) ? 'Guardado en Mis medicamentos' : 'Quitado de Mis medicamentos');
+  });
+}
 
-            const filas = tabla.querySelectorAll("tbody tr");
-            const busqueda = texto.toLowerCase().trim();
+/* ---------- vista: mi cuenta ---------- */
+function viewCuenta() {
+  if (!S.user) return requireLogin('#/cuenta');
+  const u = S.user, favs = S.favs.map(id => S.medById.get(id)).filter(Boolean);
+  app.innerHTML = `
+  <section class="head"><div style="display:flex;gap:18px;align-items:center;flex-wrap:wrap"><span class="av big">${esc(initials(u.nombre))}</span>
+    <div><h1>${esc(u.nombre)}</h1><div class="sub">${esc(u.email || '')}</div><div class="meta"><span class="tag rx">${esc(ROL[u.rol] || u.rol)}</span><span class="tag">Doc. ${esc(u.documento)}</span>${u.telefono ? `<span class="tag">${esc(u.telefono)}</span>` : ''}</div></div></div>
+    <div class="facts"><div class="fact"><b>${favs.length}</b><span>medicamentos guardados</span></div>${canOperate() ? `<a class="btn" href="#/inventario">Gestionar inventario</a>` : ''}${isStaff() ? `<a class="btn ghost" href="#/reportes">Ver reportes</a>` : ''}</div></section>
+  <div class="split" style="grid-template-columns:minmax(0,1.3fr) minmax(0,1fr)">
+    <section class="panel"><h2>Mis medicamentos <small>${favs.length ? 'con su disponibilidad actual' : ''}</small></h2>
+      <div class="rows" id="fav">${favs.length ? favs.map(m => { const r = resumen(m);
+        return `<div class="row"><div><a class="nm" href="#/medicamento/${m.id_medicamento}">${esc(m.nombre)} ${esc(m.concentracion || '')}</a><small>${esc(m.principio_activo)} · ${esc(m.forma_farmaceutica)}</small></div>
+          <div>${pill(r.con ? r.best : (r.rows.length ? 'no_disponible' : 'sin_registro'))}<small style="margin-top:4px">En <b>${r.con}</b> de ${r.sedes} sedes · ${fmt(r.total)} u.</small></div>
+          <div class="acts">${starBtn(m.id_medicamento)}<a class="btn ghost sm" href="#/medicamento/${m.id_medicamento}">Ver sedes</a></div></div>`; }).join('')
+        : `<div class="empty" style="border:0">☆<b>Aún no guardas medicamentos</b>Toca la estrella en cualquier medicamento para seguirlo desde aquí.<br><a class="btn" style="margin-top:14px" href="#/buscar">Buscar medicamentos</a></div>`}</div></section>
+    <div style="display:flex;flex-direction:column;gap:18px">
+      <section class="panel"><h2>Mis datos</h2><form id="pf" class="fform" novalidate>
+        <label>Nombre<input id="pn" value="${esc(u.nombre)}"></label>
+        <label>Teléfono<input id="pt" value="${esc(u.telefono || '')}" placeholder="3001234567"></label>
+        <div class="ferr" id="perr" hidden></div><button class="btn sm">Guardar cambios</button></form></section>
+      <section class="panel"><h2>Cambiar contraseña</h2><form id="wf" class="fform" novalidate>
+        <label>Contraseña actual<span class="pw"><input id="wa" type="password" autocomplete="current-password">${eyeBtn}</span></label>
+        <label>Nueva contraseña<span class="pw"><input id="wn" type="password" autocomplete="new-password" placeholder="Mín. 8, letras y números">${eyeBtn}</span></label>
+        <div class="ferr" id="werr" hidden></div><button class="btn sm">Actualizar contraseña</button></form></section>
+      <button class="btn ghost" id="lo" style="align-self:flex-start">Cerrar sesión</button>
+    </div></div>
+  ${u.rol === 'administrador' ? `<section class="panel" style="margin-top:18px"><h2>Usuarios del sistema <small>solo administradores</small></h2><div id="usr" class="note">Cargando…</div></section>` : ''}`;
+  bindEyes(app); bindStars(app);
+  $('#lo').onclick = () => logout('Sesión cerrada');
+  $('#pf').onsubmit = async ev => {
+    ev.preventDefault(); const er = $('#perr'); er.hidden = true;
+    const body = { nombre: $('#pn').value.trim(), telefono: $('#pt').value.trim() };
+    if (body.nombre.length < 3) { er.textContent = 'Escribe tu nombre completo.'; er.hidden = false; return; }
+    if (body.telefono && !/^\+?\d{7,15}$/.test(body.telefono.replace(/[\s-]/g, ''))) { er.textContent = 'Teléfono no válido.'; er.hidden = false; return; }
+    try {
+      if (S.demo) { const us = await demoUsers(), d = us.find(x => x.id_usuario === u.id_usuario); if (d) { d.nombre = body.nombre; d.telefono = body.telefono || null; saveDemoUsers(); } S.user = { ...u, nombre: body.nombre, telefono: body.telefono || null }; }
+      else S.user = await api('/api/auth/me', { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+      persistSession(); paintAuth(); toast('Datos actualizados'); render(true);
+    } catch (e) { er.textContent = e.message; er.hidden = false; }
+  };
+  $('#wf').onsubmit = async ev => {
+    ev.preventDefault(); const er = $('#werr'); er.hidden = true; const a = $('#wa').value, n = $('#wn').value;
+    if (n.length < 8 || !/[A-Za-z]/.test(n) || !/\d/.test(n)) { er.textContent = 'La nueva contraseña necesita 8+ caracteres, una letra y un número.'; er.hidden = false; return; }
+    try {
+      if (S.demo) { const us = await demoUsers(), d = us.find(x => x.id_usuario === u.id_usuario); if (!d || d.h !== await sha(a)) throw new Error('La contraseña actual no es correcta.'); d.h = await sha(n); saveDemoUsers(); }
+      else await api('/api/auth/cambiar-password', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ actual: a, nueva: n }) });
+      $('#wa').value = ''; $('#wn').value = ''; toast('Contraseña actualizada');
+    } catch (e) { er.textContent = e.message; er.hidden = false; }
+  };
+  if (u.rol === 'administrador') cargarUsuarios();
+}
+async function cargarUsuarios() {
+  const box = $('#usr'); if (!box) return;
+  try {
+    const list = S.demo ? (await demoUsers()).map(pubUser) : await api('/api/auth/usuarios');
+    box.className = 'mvwrap';
+    box.innerHTML = `<table class="mv"><thead><tr><th>Nombre</th><th>Documento</th><th>Correo</th><th>Rol</th><th>Activo</th></tr></thead><tbody>${list.map(x => `<tr><td>${esc(x.nombre)}</td><td>${esc(x.documento)}</td><td>${esc(x.email || '—')}</td>
+      <td><select data-u="${x.id_usuario}" data-k="rol" class="field" style="min-width:0;padding:5px 8px" ${x.id_usuario === S.user.id_usuario ? 'disabled' : ''}>${Object.keys(ROL).map(r => `<option value="${r}" ${r === x.rol ? 'selected' : ''}>${ROL[r]}</option>`).join('')}</select></td>
+      <td><input type="checkbox" data-u="${x.id_usuario}" data-k="activo" ${x.activo ? 'checked' : ''} ${x.id_usuario === S.user.id_usuario ? 'disabled' : ''}></td></tr>`).join('')}</tbody></table>`;
+    $$('[data-u]', box).forEach(el => el.onchange = async () => {
+      const body = el.dataset.k === 'rol' ? { rol: el.value } : { activo: el.checked };
+      try {
+        if (S.demo) { const us = await demoUsers(), d = us.find(x => x.id_usuario === +el.dataset.u); Object.assign(d, body); saveDemoUsers(); }
+        else await api('/api/auth/usuarios/' + el.dataset.u, { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+        toast('Usuario actualizado');
+      } catch (e) { toast(e.message, true); cargarUsuarios(); }
+    });
+  } catch (e) { box.textContent = 'No se pudo cargar la lista de usuarios: ' + e.message; }
+}
 
-            for (let i = 0; i < filas.length; i++) {
-                const contenido = filas[i].textContent.toLowerCase();
-                filas[i].style.display =
-                    contenido.includes(busqueda) ? "" : "none";
-            }
-        }
+/* ---------- exportar CSV ---------- */
+function descargarCSV(nombre, cabecera, filas) {
+  const celda = v => { v = v == null ? '' : String(v); return /[;"\n]/.test(v) ? '"' + v.replace(/"/g, '""') + '"' : v; };
+  const txt = '﻿' + [cabecera, ...filas].map(r => r.map(celda).join(';')).join('\r\n');
+  const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([txt], { type: 'text/csv;charset=utf-8' }));
+  a.download = nombre + '_' + new Date().toISOString().slice(0, 10) + '.csv'; document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 2000);
+}
 
-        document.getElementById("idMedicamento").addEventListener("keydown", function (evento) {
-            if (evento.key === "Enter") {
-                consultarInventario();
-            }
-        });
+/* ---------- vista: inventario (tabla completa) ---------- */
+function filasInventario() {
+  return S.inv.map(r => ({ r, m: S.medById.get(r.id_medicamento), s: S.sedeById.get(r.id_sede) })).filter(x => x.m && x.s);
+}
+function viewInventario() {
+  const f = S.fi;
+  app.innerHTML = `
+  <div class="head" style="margin-bottom:18px"><div><h1>Inventario</h1><div class="sub">Existencias de cada medicamento en cada sede. Filtra, ordena y exporta.</div></div>
+    <div class="facts"><button class="btn ghost" id="icsv">⬇ Exportar CSV</button></div></div>
+  <section class="panel">
+    <div class="tools">
+      <input class="field" id="iq" type="search" placeholder="Buscar medicamento o principio activo…" value="${esc(f.q)}" aria-label="Buscar">
+      <label class="sel"><span>Sede</span><select id="is"><option value="">Todas</option>${S.sedes.map(s => `<option value="${s.id_sede}" ${String(s.id_sede) === String(f.sede) ? 'selected' : ''}>${esc(short(s.nombre))}</option>`).join('')}</select></label>
+      <div class="seg" id="iest" role="group" aria-label="Estado"></div>
+    </div>
+    <div class="mx-wrap" style="max-height:none;overflow-x:auto"><table class="inv" id="itab"></table></div>
+    <div class="note" id="imore" style="text-align:center"></div>${legend}
+  </section>`;
+  const paint = () => {
+    const toks = norm(f.q).split(/\s+/).filter(Boolean);
+    let base = filasInventario().filter(x => (!f.sede || String(x.s.id_sede) === String(f.sede)) && toks.every(t => norm(x.m.nombre + ' ' + x.m.principio_activo + ' ' + x.m.concentracion).includes(t)));
+    const cnt = k => base.filter(x => x.r.estado === k).length;
+    $('#iest').innerHTML = [['all', 'Todos', base.length], ['disponible', 'Disponible', cnt('disponible')], ['bajo', 'Bajo', cnt('bajo')], ['critico', 'Crítico', cnt('critico')], ['no_disponible', 'Agotado', cnt('no_disponible')]]
+      .map(([k, l, n]) => `<button data-e="${k}" class="${f.est === k ? 'on' : ''}">${l} <small>${fmt(n)}</small></button>`).join('');
+    $$('#iest button').forEach(b => b.onclick = () => { f.est = b.dataset.e; f.n = 60; paint(); });
+    if (f.est !== 'all') base = base.filter(x => x.r.estado === f.est);
+    const key = { med: x => norm(x.m.nombre), sede: x => norm(x.s.nombre), qty: x => x.r.qty, min: x => x.r.min, est: x => EST[x.r.estado].rank, fecha: x => x.r.fecha || '' }[f.sort];
+    base.sort((a, b) => { const A = key(a), B = key(b); return (A < B ? -1 : A > B ? 1 : 0) * f.dir || a.m.nombre.localeCompare(b.m.nombre, 'es'); });
+    const th = (k, l, cls = '') => `<th class="${cls}"><button data-s="${k}" class="sortb ${f.sort === k ? 'on' : ''}">${l} ${f.sort === k ? (f.dir > 0 ? '▲' : '▼') : ''}</button></th>`;
+    const vis = base.slice(0, f.n);
+    $('#itab').innerHTML = `<thead><tr>${th('med', 'Medicamento')}${th('sede', 'Sede')}${th('qty', 'Disponible', 'num')}<th>Nivel</th>${th('min', 'Mínimo', 'num')}${th('est', 'Estado')}${th('fecha', 'Actualizado')}<th></th></tr></thead><tbody>
+      ${vis.map(({ r, m, s }) => `<tr><td><a class="nm" href="#/medicamento/${m.id_medicamento}">${esc(m.nombre)} ${esc(m.concentracion || '')}</a><small>${esc(m.forma_farmaceutica)}</small></td>
+        <td><a href="#/sede/${s.id_sede}">${esc(short(s.nombre))}</a><small>${esc(s.localidad)}</small></td>
+        <td class="num"><b class="${EST[r.estado].cls}">${fmt(r.qty)}</b></td><td style="min-width:110px">${bar(r)}</td><td class="num">${fmt(r.min)}</td><td>${pill(r.estado)}</td><td><small>${dateShort(r.fecha)}</small></td>
+        <td class="acts">${canOperate() ? `<button class="btn sm" data-mov="${r.id_inventario}" title="Registrar entrada o salida">±</button>` : ''}</td></tr>`).join('') || `<tr><td colspan="8" class="note">Sin resultados con esos filtros.</td></tr>`}</tbody>`;
+    $('#imore').innerHTML = base.length > vis.length ? `Mostrando ${fmt(vis.length)} de ${fmt(base.length)} registros · <button class="btn ghost sm" id="mas">Mostrar más</button>` : `${fmt(base.length)} ${plural(base.length, 'registro', 'registros')}`;
+    const mas = $('#mas'); if (mas) mas.onclick = () => { f.n += 100; paint(); };
+    $$('.sortb', app).forEach(b => b.onclick = () => { if (f.sort === b.dataset.s) f.dir *= -1; else { f.sort = b.dataset.s; f.dir = 1; } paint(); });
+    $$('[data-mov]', app).forEach(b => b.onclick = () => openMov(+b.dataset.mov));
+    S._invRows = base;
+  };
+  paint();
+  $('#iq').oninput = e => { f.q = e.target.value; f.n = 60; paint(); };
+  $('#is').onchange = e => { f.sede = e.target.value; f.n = 60; paint(); };
+  $('#icsv').onclick = () => descargarCSV('inventario_medired', ['Medicamento', 'Concentración', 'Forma', 'Sede', 'Localidad', 'Disponible', 'Mínimo', 'Estado', 'Actualizado'],
+    (S._invRows || []).map(({ r, m, s }) => [m.nombre, m.concentracion, m.forma_farmaceutica, s.nombre, s.localidad, r.qty, r.min, EST[r.estado].label, (r.fecha || '').slice(0, 10)]));
+}
 
-        verificarSistema();
-    </script>
+/* ---------- gráficos SVG / CSS (sin librerías) ---------- */
+const COL = { ok: '#157a3d', warn: '#d9a400', crit: '#e8590c', out: '#c92a2a', none: '#8696a0', ent: '#0a8f9c', sal: '#e07a1f' };
+const COLE = { disponible: COL.ok, bajo: COL.warn, critico: COL.crit, no_disponible: COL.out };
+function donut(items, top, sub) {
+  const tot = items.reduce((a, i) => a + i.value, 0) || 1, R = 54, C = 2 * Math.PI * R; let off = 0;
+  const segs = items.filter(i => i.value > 0).map(i => { const len = i.value / tot * C;
+    const s = `<circle r="${R}" cx="70" cy="70" fill="none" stroke="${i.color}" stroke-width="22" stroke-dasharray="${len} ${C - len}" stroke-dashoffset="${-off}" transform="rotate(-90 70 70)"><title>${esc(i.label)}: ${fmt(i.value)}</title></circle>`; off += len; return s; }).join('');
+  return `<div class="donut"><svg viewBox="0 0 140 140" role="img" aria-label="${esc(sub)}"><circle r="${R}" cx="70" cy="70" fill="none" stroke="#e8eff2" stroke-width="22"/>${segs}<text x="70" y="70" text-anchor="middle" class="dt">${top}</text><text x="70" y="88" text-anchor="middle" class="ds">${esc(sub)}</text></svg>
+    <ul class="dl">${items.map(i => `<li><i style="background:${i.color}"></i><span>${esc(i.label)}</span><b>${fmt(i.value)}</b><em>${Math.round(i.value / tot * 100)}%</em></li>`).join('')}</ul></div>`;
+}
+function hbars(items, color, unit = '') {
+  const max = Math.max(...items.map(i => i.value), 1);
+  return `<div class="hb">${items.map(i => `<div class="hbr"><span class="hbl" title="${esc(i.label)}">${i.href ? `<a href="${i.href}">${esc(i.label)}</a>` : esc(i.label)}</span><div class="hbt"><i style="width:${Math.max(i.value / max * 100, i.value ? 1.5 : 0)}%;background:${i.color || color}"></i></div><b>${fmt(i.value)}${unit}</b></div>`).join('')}</div>`;
+}
+function stacked(items) {
+  return `<div class="hb">${items.map(i => { const tot = i.segs.reduce((a, s) => a + s.v, 0) || 1;
+    return `<div class="hbr"><span class="hbl" title="${esc(i.label)}"><a href="${i.href}">${esc(i.label)}</a></span><div class="hbt st">${i.segs.map(s => s.v ? `<i style="width:${s.v / tot * 100}%;background:${s.color}" title="${esc(s.t)}: ${s.v}"></i>` : '').join('')}</div><b>${tot}</b></div>`; }).join('')}</div>`;
+}
+const niceMax = v => { if (v <= 0) return 10; const p = Math.pow(10, Math.floor(Math.log10(v))), f = v / p; return (f <= 1 ? 1 : f <= 2 ? 2 : f <= 5 ? 5 : 10) * p; };
+function lineChart(days) {
+  if (!days.length) return '<p class="note">Sin movimientos en el período.</p>';
+  const W = 680, H = 250, pl = 50, pr = 16, pt = 16, pb = 32, n = days.length;
+  const max = niceMax(Math.max(...days.map(d => Math.max(d.entradas, d.salidas)), 1));
+  const x = i => pl + (n === 1 ? .5 : i / (n - 1)) * (W - pl - pr), y = v => pt + (1 - v / max) * (H - pt - pb);
+  const path = k => days.map((d, i) => (i ? 'L' : 'M') + x(i).toFixed(1) + ' ' + y(d[k]).toFixed(1)).join(' ');
+  const area = k => path(k) + ` L${x(n - 1).toFixed(1)} ${y(0)} L${x(0).toFixed(1)} ${y(0)} Z`;
+  const grid = [0, .25, .5, .75, 1].map(t => `<line x1="${pl}" x2="${W - pr}" y1="${y(max * t)}" y2="${y(max * t)}" stroke="#e5ecef"/><text x="${pl - 8}" y="${y(max * t) + 4}" text-anchor="end">${fmt(Math.round(max * t))}</text>`).join('');
+  const step = Math.max(1, Math.ceil(n / 7));
+  const xl = days.map((d, i) => i % step === 0 ? `<text x="${x(i)}" y="${H - 10}" text-anchor="middle">${new Date(d.fecha + 'T12:00:00').toLocaleDateString('es-CO', { day: 'numeric', month: 'short' })}</text>` : '').join('');
+  const pts = k => n <= 45 ? days.map((d, i) => `<circle cx="${x(i)}" cy="${y(d[k])}" r="3.2" fill="#fff" stroke="${k === 'entradas' ? COL.ent : COL.sal}" stroke-width="2"><title>${d.fecha} · ${k}: ${fmt(d[k])} u.</title></circle>`).join('') : '';
+  return `<svg viewBox="0 0 ${W} ${H}" class="lc" role="img" aria-label="Entradas y salidas por día">${grid}${xl}
+    <path d="${area('entradas')}" fill="${COL.ent}" opacity=".12"/><path d="${area('salidas')}" fill="${COL.sal}" opacity=".12"/>
+    <path d="${path('entradas')}" fill="none" stroke="${COL.ent}" stroke-width="2.4" stroke-linejoin="round"/><path d="${path('salidas')}" fill="none" stroke="${COL.sal}" stroke-width="2.4" stroke-linejoin="round"/>${pts('entradas')}${pts('salidas')}</svg>
+    <div class="legend" style="border:0;background:none;padding:6px 0 0"><span style="color:${COL.ent}"><i></i>Entradas (unidades)</span><span style="color:${COL.sal}"><i></i>Salidas (unidades)</span></div>`;
+}
+
+/* ---------- vista: reportes ---------- */
+function viewReportes() {
+  const R = S.rep;
+  app.innerHTML = `
+  <div class="head" style="margin-bottom:18px"><div><h1>Reportes y gráficos</h1><div class="sub">Análisis del inventario, la disponibilidad y los movimientos registrados en el sistema.</div></div>
+    <div class="facts noprint"><button class="btn ghost" id="rprint">🖨 Imprimir / PDF</button></div></div>
+  <div class="tabs noprint" role="tablist"><button role="tab" data-t="inv" class="${R.tab === 'inv' ? 'on' : ''}">▥ Reporte de inventario</button><button role="tab" data-t="mov" class="${R.tab === 'mov' ? 'on' : ''}">▤ Movimientos de inventario</button></div>
+  <div id="rep"></div>`;
+  $$('[data-t]').forEach(b => b.onclick = () => { R.tab = b.dataset.t; viewReportes(); });
+  $('#rprint').onclick = () => window.print();
+  if (R.tab === 'inv') repInventario(); else repMovimientos();
+}
+
+function repInventario() {
+  const rows = filasInventario(), n = rows.length;
+  const by = k => rows.filter(x => x.r.estado === k).length;
+  const unidades = rows.reduce((a, x) => a + x.r.qty, 0), alert = by('bajo') + by('critico') + by('no_disponible');
+  const porSede = S.sedes.map(s => { const rs = rows.filter(x => x.s.id_sede === s.id_sede); return { s, n: rs.length, u: rs.reduce((a, x) => a + x.r.qty, 0), d: rs.filter(x => x.r.estado === 'disponible').length, b: rs.filter(x => x.r.estado === 'bajo').length, c: rs.filter(x => x.r.estado === 'critico').length, o: rs.filter(x => x.r.estado === 'no_disponible').length }; });
+  const crit = S.meds.map(m => { const rs = rows.filter(x => x.m.id_medicamento === m.id_medicamento); return { m, al: rs.filter(x => x.r.estado === 'critico' || x.r.estado === 'no_disponible').length, n: rs.length, u: rs.reduce((a, x) => a + x.r.qty, 0) }; })
+    .filter(x => x.al > 0).sort((a, b) => b.al - a.al || a.u - b.u).slice(0, 10);
+  const cobertura = S.meds.map(m => ({ m, con: rows.filter(x => x.m.id_medicamento === m.id_medicamento && x.r.qty > 0).length })).sort((a, b) => a.con - b.con || a.m.nombre.localeCompare(b.m.nombre, 'es')).slice(0, 8);
+  $('#rep').innerHTML = `
+  <div class="kpis" style="margin-top:0"><div class="kpi"><div class="ic">▤</div><div><b>${fmt(n)}</b><span>Registros de inventario</span></div></div>
+    <div class="kpi"><div class="ic">📦</div><div><b>${fmt(unidades)}</b><span>Unidades disponibles</span></div></div>
+    <div class="kpi"><div class="ic" style="background:var(--ok-bg);color:var(--ok)">✓</div><div><b>${n ? Math.round(by('disponible') / n * 100) : 0}%</b><span>Con stock suficiente</span></div></div>
+    <div class="kpi w"><div class="ic">▲</div><div><b>${fmt(alert)}</b><span>En alerta (bajo, crítico o agotado)</span></div></div></div>
+  <div class="repgrid">
+    <section class="panel"><h2>Estado del inventario <button class="btn ghost sm noprint" id="csvi">⬇ CSV</button></h2><div class="pad">${donut([
+      { label: 'Disponible', value: by('disponible'), color: COL.ok }, { label: 'Stock bajo', value: by('bajo'), color: COL.warn }, { label: 'Crítico', value: by('critico'), color: COL.crit }, { label: 'Agotado', value: by('no_disponible'), color: COL.out }], fmt(n), 'registros')}</div></section>
+    <section class="panel"><h2>Unidades disponibles por sede</h2><div class="pad">${hbars(porSede.sort((a, b) => b.u - a.u).map(x => ({ label: short(x.s.nombre), value: x.u, href: '#/sede/' + x.s.id_sede })), COL.ent)}</div></section>
+    <section class="panel wide2"><h2>Estado por sede <small>proporción de medicamentos en cada nivel</small></h2><div class="pad">${stacked(porSede.slice().sort((a, b) => (b.c + b.o) / (b.n || 1) - (a.c + a.o) / (a.n || 1)).map(x => ({ label: short(x.s.nombre), href: '#/sede/' + x.s.id_sede, segs: [{ v: x.d, color: COL.ok, t: 'Disponible' }, { v: x.b, color: COL.warn, t: 'Bajo' }, { v: x.c, color: COL.crit, t: 'Crítico' }, { v: x.o, color: COL.out, t: 'Agotado' }] })))}</div>
+      <div class="legend"><span class="ok"><i></i>Disponible</span><span class="warn"><i></i>Stock bajo</span><span class="crit"><i></i>Crítico</span><span class="out"><i></i>Agotado</span></div></section>
+    <section class="panel"><h2>Medicamentos más críticos <small>sedes en alerta</small></h2><div class="pad">${crit.length ? hbars(crit.map(x => ({ label: x.m.nombre + ' ' + (x.m.concentracion || ''), value: x.al, href: '#/medicamento/' + x.m.id_medicamento })), COL.crit, ` / ${S.sedes.length}`) : '<p class="note">Sin medicamentos en alerta. 🎉</p>'}</div></section>
+    <section class="panel"><h2>Menor cobertura <small>sedes con stock</small></h2><div class="pad">${hbars(cobertura.map(x => ({ label: x.m.nombre + ' ' + (x.m.concentracion || ''), value: x.con, href: '#/medicamento/' + x.m.id_medicamento })), COL.none, ` / ${S.sedes.length}`)}</div></section>
+  </div>`;
+  $('#csvi').onclick = () => descargarCSV('reporte_inventario', ['Medicamento', 'Concentración', 'Sede', 'Localidad', 'Disponible', 'Mínimo', 'Estado'], rows.map(({ r, m, s }) => [m.nombre, m.concentracion, s.nombre, s.localidad, r.qty, r.min, EST[r.estado].label]));
+}
+
+/* movimientos de demostración (solo cuando no hay API): historial sintético reproducible */
+function demoMovs() {
+  if (S.demoMovs) return S.demoMovs;
+  let seed = 2026; const rnd = () => { seed |= 0; seed = seed + 0x6D2B79F5 | 0; let t = Math.imul(seed ^ seed >>> 15, 1 | seed); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; };
+  const out = [], hoy = new Date(); hoy.setHours(0, 0, 0, 0);
+  const op = 'Operador de Inventario';
+  for (const r of S.inv) {
+    const m = S.medById.get(r.id_medicamento), s = S.sedeById.get(r.id_sede); if (!m || !s) continue;
+    const plan = [[35, 'entrada', 'carga_inicial'], [20, 'entrada', 'reposicion'], [17, 'salida', 'dispensacion'], [14, 'salida', 'dispensacion'], [11, 'salida', 'dispensacion'], [9, 'entrada', 'reposicion'], [6, 'salida', 'dispensacion'], [3, 'salida', 'dispensacion']];
+    for (const [d, tipo, fuente] of plan) {
+      const dt = new Date(hoy.getTime() - d * 864e5 + (8 + Math.floor(rnd() * 9)) * 36e5);
+      const cantidad = Math.max(3, Math.round((tipo === 'entrada' ? r.min * (0.6 + rnd() * 2.2) : r.min * (0.3 + rnd() * 0.9))));
+      out.push({ id_movimiento: out.length + 1, fecha_hora: dt.toISOString(), tipo_movimiento: tipo, cantidad, stock_anterior: 0, stock_nuevo: 0, fuente, id_medicamento: m.id_medicamento, medicamento: m.nombre, concentracion: m.concentracion, id_sede: s.id_sede, sede: s.nombre, operador: op });
+    }
+  }
+  return (S.demoMovs = out.sort((a, b) => a.fecha_hora < b.fecha_hora ? 1 : -1));
+}
+function agregar(rows, dias) {
+  const por = new Map(), sedes = new Map(), meds = new Map(), fuentes = new Map(); let ent = 0, sal = 0;
+  for (const x of rows) {
+    if (x.tipo_movimiento !== 'entrada' && x.tipo_movimiento !== 'salida') continue;
+    const e = x.tipo_movimiento === 'entrada', f = String(x.fecha_hora).slice(0, 10);
+    (por.get(f) || por.set(f, { fecha: f, entradas: 0, salidas: 0 }).get(f))[e ? 'entradas' : 'salidas'] += x.cantidad;
+    (sedes.get(x.id_sede) || sedes.set(x.id_sede, { id_sede: x.id_sede, sede: x.sede, entradas: 0, salidas: 0 }).get(x.id_sede))[e ? 'entradas' : 'salidas'] += x.cantidad;
+    (meds.get(x.id_medicamento) || meds.set(x.id_medicamento, { id_medicamento: x.id_medicamento, nombre: x.medicamento, concentracion: x.concentracion, entradas: 0, salidas: 0 }).get(x.id_medicamento))[e ? 'entradas' : 'salidas'] += x.cantidad;
+    fuentes.set(x.fuente, (fuentes.get(x.fuente) || 0) + 1); e ? ent += x.cantidad : sal += x.cantidad;
+  }
+  return { totales: { movimientos: rows.length, unidades_entrada: ent, unidades_salida: sal }, por_dia: [...por.values()].sort((a, b) => a.fecha < b.fecha ? -1 : 1), por_sede: [...sedes.values()].sort((a, b) => b.salidas - a.salidas),
+    top_salidas: [...meds.values()].sort((a, b) => b.salidas - a.salidas).slice(0, 10), por_fuente: [...fuentes].map(([fuente, movimientos]) => ({ fuente, movimientos })).sort((a, b) => b.movimientos - a.movimientos) };
+}
+function rellenarDias(por, dias) {
+  if (!por.length) return [];
+  const m = new Map(por.map(d => [d.fecha, d])), out = [];
+  const fin = new Date(); fin.setHours(12, 0, 0, 0);
+  const ini = dias > 0 ? new Date(fin.getTime() - (dias - 1) * 864e5) : new Date(por[0].fecha + 'T12:00:00');
+  for (let d = new Date(ini); d <= fin; d = new Date(d.getTime() + 864e5)) { const k = d.toISOString().slice(0, 10); out.push(m.get(k) || { fecha: k, entradas: 0, salidas: 0 }); }
+  return out;
+}
+async function cargarMov() {
+  const R = S.rep; R.loading = true; R.err = null; R.show = 30; paintMov();
+  try {
+    if (S.demo) {
+      const lim = R.dias > 0 ? Date.now() - R.dias * 864e5 : 0;
+      const rows = [...S.movs.map(x => ({ ...x, sede: (S.sedeById.get((S.invById.get(x.id_inventario) || {}).id_sede) || {}).nombre, id_sede: (S.invById.get(x.id_inventario) || {}).id_sede, medicamento: (S.medById.get(x.id_medicamento) || {}).nombre, concentracion: (S.medById.get(x.id_medicamento) || {}).concentracion, operador: S.user && S.user.nombre })), ...demoMovs()]
+        .filter(x => new Date(x.fecha_hora).getTime() >= lim && (!R.sede || String(x.id_sede) === String(R.sede))).sort((a, b) => a.fecha_hora < b.fecha_hora ? 1 : -1);
+      R.data = agregar(rows, R.dias); R.rows = rows.slice(0, 200);
+    } else {
+      const q = `dias=${R.dias}${R.sede ? '&id_sede=' + R.sede : ''}`;
+      const [res, rows] = await Promise.all([api('/api/reportes/movimientos/resumen?' + q), api('/api/reportes/movimientos?' + q + '&limit=200')]);
+      R.data = res; R.rows = rows;
+    }
+  } catch (e) { R.err = e.message; }
+  R.loading = false; paintMov();
+}
+function repMovimientos() {
+  const R = S.rep, box = $('#rep');
+  if (!S.user) { box.innerHTML = `<div class="empty">🔒<b>Reporte restringido</b>Los movimientos de inventario solo los ven operadores, analistas y administradores.<br><a class="btn" style="margin-top:14px" href="#/ingresar" id="goLogin">Ingresar</a></div>`; $('#goLogin').onclick = () => { S.next = '#/reportes'; }; return; }
+  if (!isStaff()) { box.innerHTML = `<div class="empty">🔒<b>Tu rol no tiene acceso</b>Estás ingresada/o como <b style="display:inline">${esc(ROL[S.user.rol])}</b>. Este reporte es para el personal de la EPS.</div>`; return; }
+  box.innerHTML = `<div class="tools noprint"><div class="seg" id="mdias" role="group" aria-label="Período">${[[7, '7 días'], [30, '30 días'], [90, '90 días'], [0, 'Todo']].map(([d, l]) => `<button data-d="${d}" class="${R.dias === d ? 'on' : ''}">${l}</button>`).join('')}</div>
+    <label class="sel"><span>Sede</span><select id="msede"><option value="">Todas</option>${S.sedes.map(s => `<option value="${s.id_sede}" ${String(s.id_sede) === String(R.sede) ? 'selected' : ''}>${esc(short(s.nombre))}</option>`).join('')}</select></label>
+    <button class="btn ghost sm" id="mcsv" style="margin-left:auto">⬇ Exportar CSV</button></div><div id="mbody"></div>`;
+  $$('#mdias button').forEach(b => b.onclick = () => { R.dias = +b.dataset.d; $$('#mdias button').forEach(x => x.classList.toggle('on', x === b)); cargarMov(); });
+  $('#msede').onchange = e => { R.sede = e.target.value; cargarMov(); };
+  $('#mcsv').onclick = exportarMov;
+  if (R.data && !R.stale) paintMov(); else cargarMov();
+}
+function paintMov() {
+  const R = S.rep, b = $('#mbody'); if (!b) return;
+  if (R.loading) { b.innerHTML = '<div class="grid" style="margin-top:14px">' + '<div class="skel"></div>'.repeat(3) + '</div>'; return; }
+  if (R.err) { b.innerHTML = `<div class="empty">⚠️<b>No se pudo cargar el reporte</b>${esc(R.err)}<br><button id="rr">Reintentar</button></div>`; $('#rr').onclick = cargarMov; return; }
+  const d = R.data; if (!d) return;
+  const t = d.totales, dias = rellenarDias(d.por_dia, R.dias), bal = t.unidades_entrada - t.unidades_salida;
+  b.innerHTML = `
+  <div class="kpis" style="margin-top:14px"><div class="kpi"><div class="ic">⇄</div><div><b>${fmt(t.movimientos)}</b><span>Movimientos</span></div></div>
+    <div class="kpi"><div class="ic" style="background:#dff3f4;color:${COL.ent}">↓</div><div><b>${fmt(t.unidades_entrada)}</b><span>Unidades que entraron</span></div></div>
+    <div class="kpi"><div class="ic" style="background:#fdebd8;color:${COL.sal}">↑</div><div><b>${fmt(t.unidades_salida)}</b><span>Unidades que salieron</span></div></div>
+    <div class="kpi ${bal < 0 ? 'o' : ''}"><div class="ic">${bal < 0 ? '▼' : '▲'}</div><div><b>${bal > 0 ? '+' : ''}${fmt(bal)}</b><span>Balance neto del período</span></div></div></div>
+  <div class="repgrid">
+    <section class="panel wide2"><h2>Entradas y salidas por día</h2><div class="pad">${lineChart(dias)}</div></section>
+    <section class="panel"><h2>Salidas por sede <small>unidades</small></h2><div class="pad">${hbars(d.por_sede.slice(0, 12).map(x => ({ label: short(x.sede), value: x.salidas, href: '#/sede/' + x.id_sede })), COL.sal)}</div></section>
+    <section class="panel"><h2>Medicamentos con más salidas <small>unidades</small></h2><div class="pad">${hbars(d.top_salidas.map(x => ({ label: x.nombre + ' ' + (x.concentracion || ''), value: x.salidas, href: '#/medicamento/' + x.id_medicamento })), COL.sal)}</div></section>
+    <section class="panel"><h2>Origen de los movimientos</h2><div class="pad">${donut(d.por_fuente.map((f, i) => ({ label: f.fuente.replace(/_/g, ' '), value: f.movimientos, color: ['#0a8f9c', '#e07a1f', '#6c5ce7', '#8696a0', '#d9a400'][i % 5] })), fmt(t.movimientos), 'movimientos')}</div></section>
+    <section class="panel wide2"><h2>Últimos movimientos <small>mostrando ${Math.min(R.show || 30, R.rows.length)} de ${R.rows.length} más recientes</small></h2><div class="mvwrap"><table class="mv"><thead><tr><th>Fecha</th><th>Medicamento</th><th>Sede</th><th>Tipo</th><th>Cant.</th><th>Stock</th><th>Fuente</th><th>Operador</th></tr></thead><tbody>
+      ${R.rows.slice(0, R.show || 30).map(x => `<tr><td>${dateTime(x.fecha_hora)}</td><td><a href="#/medicamento/${x.id_medicamento}">${esc(x.medicamento)} ${esc(x.concentracion || '')}</a></td><td>${esc(short(x.sede || ''))}</td><td class="tipo ${esc(x.tipo_movimiento)}">${esc(x.tipo_movimiento)}</td><td>${x.tipo_movimiento === 'salida' ? '−' : '+'}${fmt(x.cantidad)}</td><td>${S.demo && !x.stock_nuevo ? '—' : fmt(x.stock_anterior) + ' → <b>' + fmt(x.stock_nuevo) + '</b>'}</td><td>${esc(String(x.fuente).replace(/_/g, ' '))}</td><td>${esc(x.operador || '—')}</td></tr>`).join('') || '<tr><td colspan="8" class="note">Sin movimientos en el período.</td></tr>'}</tbody></table></div>${R.rows.length > (R.show || 30) ? '<div class="note" style="text-align:center"><button class="btn ghost sm" id="mmas">Mostrar más</button></div>' : ''}</section>
+  </div>`;
+  const mm = $('#mmas'); if (mm) mm.onclick = () => { R.show = (R.show || 30) + 50; paintMov(); };
+}
+async function exportarMov() {
+  const R = S.rep; let rows = R.rows || [];
+  try { if (!S.demo) rows = await api(`/api/reportes/movimientos?dias=${R.dias}${R.sede ? '&id_sede=' + R.sede : ''}&limit=2000`); } catch (e) { toast(e.message, true); return; }
+  descargarCSV('movimientos_inventario', ['Fecha', 'Medicamento', 'Concentración', 'Sede', 'Tipo', 'Cantidad', 'Stock anterior', 'Stock nuevo', 'Fuente', 'Operador'],
+    rows.map(x => [String(x.fecha_hora).replace('T', ' ').slice(0, 19), x.medicamento, x.concentracion, x.sede, x.tipo_movimiento, x.cantidad, x.stock_anterior, x.stock_nuevo, x.fuente, x.operador]));
+}
+
+/* ---------- arranque ---------- */
+loadSession(); paintAuth();
+loadAll();
+</script>
 </body>
 </html>

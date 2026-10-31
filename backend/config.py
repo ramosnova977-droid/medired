@@ -23,5 +23,12 @@ DB_SCHEMA = "medired"
 
 CORS_ORIGINS = os.getenv(
     "MEDIRED_CORS_ORIGINS",
-    "http://localhost:3000,http://localhost:5173"
+    "http://localhost:3000,http://localhost:5173,http://localhost:8000,http://127.0.0.1:8000"
 ).split(",")
+
+# Clave para firmar las sesiones. En .env agrega una propia y larga, p. ej.:
+#   MEDIRED_SECRET_KEY=<cadena aleatoria de 40+ caracteres>
+# Si no existe se usa una de desarrollo (sirve para el proyecto académico,
+# pero cualquiera que conozca esa clave podría fabricar sesiones).
+SECRET_KEY = os.getenv("MEDIRED_SECRET_KEY", "medired-clave-de-desarrollo-cambiar")
+TOKEN_HORAS = int(os.getenv("MEDIRED_TOKEN_HORAS", "12"))

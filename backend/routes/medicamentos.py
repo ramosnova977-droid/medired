@@ -10,7 +10,9 @@ from sqlalchemy.orm import Session
 
 from database import get_db
 from models import Medicamento
+from models import Usuario
 from schemas import MedicamentoOut, MedicamentoCreate
+from security import ROLES_OPERACION, requiere_roles
 
 router = APIRouter(prefix="/api/medicamentos", tags=["medicamentos"])
 
@@ -45,7 +47,11 @@ def obtener_medicamento(id_medicamento: int, db: Session = Depends(get_db)):
 
 
 @router.post("", response_model=MedicamentoOut, status_code=201)
-def crear_medicamento(payload: MedicamentoCreate, db: Session = Depends(get_db)):
+def crear_medicamento(
+    payload: MedicamentoCreate,
+    db: Session = Depends(get_db),
+    _: Usuario = Depends(requiere_roles(*ROLES_OPERACION)),
+):
     """POST /api/medicamentos - registrar un medicamento en el catálogo.
 
     Uso típico: cargar catálogo desde datos abiertos INVIMA/SISMED
